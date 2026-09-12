@@ -1,6 +1,6 @@
 ---
-title: "Week 3 - Worklog"
-date: 2026-08-01
+title: "Worklog - Week 3"
+date: 2026-08-17
 weight: 3
 chapter: false
 pre: " <b> 1.3. </b> "
@@ -8,32 +8,24 @@ pre: " <b> 1.3. </b> "
 
 ### Week 3 Objectives:
 
-- Master AWS Interconnectivity & Hybrid Storage: Gain practical hands-on experience with AWS Transit Gateway, AWS File Storage Gateway, and hybrid virtual machine migration (VM Import/Export).
+- Master AWS Networking fundamentals: Virtual Private Cloud (VPC), Subnets, and Route Tables.
+- Configure connectivity using Internet Gateways (IGW) and NAT Gateways for Private Subnets.
+- Understand dual-layer network security: Security Groups (Stateful at Instance level) vs. NACLs (Stateless at Subnet level).
+- Hands-on deployment of a production-grade Custom VPC containing isolated Public and Private Subnets.
 
-- Deploy Automated Data Protection & Backup: Configure centralized backup policies using AWS Backup, integrated with S3 storage and notification mechanisms.
+### Tasks to be implemented this week:
 
-- Configure Object Storage & Static Web Hosting: Learn Amazon S3 management, including bucket policies, Block Public Access settings, static website hosting, and Access Control Lists (ACLs).
+| Day | Task Description | Start Date | End Date | Resource / Documentation |
+| --- | --- | --- | --- | --- |
+| Mon | - Overview of Amazon VPC: CIDR block allocation (IPv4), Public Subnets, and Private Subnets concepts.<br>- Design an IP addressing scheme for a custom VPC (e.g., 10.0.0.0/16). | 08/17/2026 | 08/17/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Tue | - Create Custom VPC, partition Subnets (Public: 10.0.1.0/24, Private: 10.0.2.0/24).<br>- Create an Internet Gateway (IGW) and attach it to the Custom VPC.<br>- Configure Route Tables to direct 0.0.0.0/0 traffic to the IGW for Public Subnets. | 08/18/2026 | 08/18/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Wed | - Study NAT Gateways: Enabling outbound internet access for Private Subnet instances.<br>- Allocate Elastic IP (EIP), launch NAT Gateway in Public Subnet, and update Private Route Tables. | 08/19/2026 | 08/19/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Thu | - Deep dive into Network Security: Security Groups vs Network Access Control Lists (NACLs).<br>- Configure Inbound/Outbound rules for SG and stateless ALLOW/DENY rules in NACLs. | 08/20/2026 | 08/20/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Fri | - Comprehensive Hands-on Lab: Deploy Bastion Host (Public EC2) and a Private EC2 Instance.<br>- SSH into Private EC2 via Bastion Host Jump Server.<br>- Verify outbound internet connectivity on Private EC2 via NAT Gateway and cleanup resources. | 08/21/2026 | 08/21/2026 | https://cloudjourney.awsstudygroup.com/ |
 
-- Execute On-Premises to Cloud Migration: Practice exporting, uploading, importing, and deploying virtual machine images (AMIs) between on-premises environments and AWS.
+### Key Achievements in Week 3:
 
-### Tasks to be carried out this week:
-
-| Day | Task                                                                                                                                                                                                                             | Start Date | Completion Date | Reference Material                      |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------- | --------------------------------------- |
-| 2   | - Set up AWS Transit Gateway.<br>- Create Transit Gateway.<br>- Create Transit Gateway route tables.<br>- Add Transit Gateway routes to VPC route tables.                                                                        | 03/08/2026 | 03/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Deploy AWS Backup to the System.<br>- Create S3 Bucket.<br>- Create Backup plan. <br> - Set up notifications.                                                                                                                  | 04/08/2026 | 04/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Deploy File Storage Gateway.<br>- Create EC2 for Storage Gateway.<br>- Create Storage Gateway.<br>- Create File Shares.<br> - Connect File Shares on On-premise machine.                                                       | 05/08/2026 | 05/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Starting with Amazon S3.<br>- Enable static website feature.<br>- Configuring public access block. <br> - Configuring public objects.                                                                                          | 06/08/2026 | 06/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Export Virtual Machine from On-premises.<br>- Upload virtual machine to AWS.<br>- Import virtual machine to AWS. <br> - Deploy Instance from AMI. <br> - Setting up S3 bucket ACL.<br> - Export virtual machine from Instance. | 07/08/2026 | 07/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-
-### Week 3 Achievements:
-
-- Successfully Configured AWS Transit Gateway: Created Transit Gateway resource, established route tables, and updated VPC route tables to enable seamless cross-network routing.
-
-- Deployed Automated Backup Management: Provisioned S3 target buckets and configured automated AWS Backup plans with event notification systems.
-
-- Established File Storage Gateway: Deployed EC2-based Storage Gateway, configured file shares, and successfully mounted shares onto on-premises machines for hybrid access.
-
-- Implemented S3 Static Web Hosting & Security: Enabled static website hosting on Amazon S3 while properly configuring Block Public Access rules and object-level permissions.
-
-- Executed End-to-End VM Migration & Management: Completed full-cycle virtual machine export/import processes between on-premises and AWS, launched EC2 instances from converted AMIs, managed S3 ACLs, and exported instances back to VM formats.
+- Mastered AWS VPC Networking architecture, including CIDR calculations, subnetting, and route management.
+- Successfully built a Custom VPC with fully functional Public and Private subnets.
+- Understood stateful Security Groups vs. stateless NACLs and learned how to block specific IP addresses at the subnet perimeter.
+- Completed comprehensive VPC Lab: Deployed Bastion Host jump server and verified NAT Gateway outbound internet capability for private resources.

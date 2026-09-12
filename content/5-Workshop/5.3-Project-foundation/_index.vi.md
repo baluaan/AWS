@@ -1,6 +1,6 @@
 ---
 title: "Chuẩn bị dự án"
-date: 2026-08-24
+date: 2026-09-11
 weight: 3
 chapter: false
 pre: " <b> 5.3. </b> "
@@ -8,136 +8,314 @@ pre: " <b> 5.3. </b> "
 
 ### Mục tiêu
 
-Trong phần này, bạn sẽ chuẩn bị mã nguồn website tĩnh và tệp cấu hình script tự động hóa bằng Python cho AWS Lambda trước khi tiến hành triển khai lên hạ tầng AWS. Bạn cũng sẽ kiểm tra cấu trúc mã nguồn để đảm bảo quá trình triển khai diễn ra liền mạch.
+Trong phần này, bạn sẽ chuẩn bị tệp cấu hình script tự động hóa bằng Python cho AWS Lambda và sẵn sàng các kịch bản kiểm thử giả lập tấn công SSH trước khi tiến hành triển khai lên hạ tầng AWS. Bạn cũng sẽ nắm rõ danh sách tham số và tên tài nguyên cấu hình chuẩn để đảm bảo quá trình triển khai diễn ra liền mạch.
 
 ---
 
-## 1. Chuẩn bị mã nguồn website tĩnh
+## 1. Chuẩn bị kịch bản kiểm thử SSH Brute Force trên máy cục bộ
 
-Dự án này sử dụng một trang web tĩnh (HTML/CSS/JS) làm đối tượng bảo vệ. Mã nguồn trang web mẫu được lưu trữ trên GitHub:
-[https://github.com/vutungvn/portfolio](https://github.com/vutungvn/portfolio)
+Dự án này sử dụng máy chủ Amazon EC2 Ubuntu làm đối tượng bảo vệ khỏi các cuộc tấn công dò quét mật khẩu SSH. Để chuẩn bị cho bước kiểm thử hệ thống tự động phản ứng, bạn chuẩn bị sẵn các câu lệnh kiểm thử trên Terminal hoặc PowerShell cục bộ:
 
-Để tải mã nguồn trang web về máy cục bộ, bạn mở Terminal hoặc PowerShell và thực hiện các lệnh sau:
+Thực hiện lệnh kiểm thử kết nối SSH thủ công (giả lập đăng nhập sai mật khẩu):
+"ssh invalid_user@<EC2_PUBLIC_IP>"
 
-```bash
-# Clone kho lưu trữ chứa mã nguồn website
-git clone https://github.com/vutungvn/portfolio.git
-
-# Di chuyển vào thư mục dự án
-cd portfolio
-
-```
-
-Giao diện sau khi chạy lên thành công:
-
-![Chạy ứng dụng](/images/Workshop/Project-foundation/run-localhost.png)
+Hoặc chuẩn bị sẵn công cụ Hydra để thực hiện giả lập tấn công Brute Force tự động với tần suất cao (để kích hoạt ngưỡng vi phạm ≥ 5 lần/1 phút):
+"hydra -l admin -P passwords.txt <EC2_PUBLIC_IP> ssh -t 4"
 
 ---
 
 ## 2. Chuẩn bị mã nguồn hàm AWS Lambda (Python)
 
-Tạo tệp `lambda_function.py` lưu trên máy cục bộ. Đoạn mã Python này sẽ được triển khai lên AWS Lambda ở Bước 5.8 để trích xuất IP vi phạm từ CloudWatch Logs và tự động cập nhật WAF IP Set.
-
-```python
-import os
+Tạo tệp "lambda_function.py" lưu trên máy cục bộ. Đoạn mã Python này sẽ được tải lên dịch vụ AWS Lambda ở các bước tiếp theo nhằm giải mã dữ liệu log từ CloudWatch, bóc tách địa chỉ IP vi phạm, cập nhật bộ đếm vào Amazon DynamoDB, gửi thông báo qua Amazon SNS và tự động chèn quy tắc "DENY" vào Network ACL (NACL).
+```json
 import boto3
+import os
+import ipaddress
+import base64
+import gzip
 import json
+import re
 import time
 
-# Khởi tạo clients AWS SDK
-wafv2 = boto3.client('wafv2', region_name='us-east-1')
-logs = boto3.client('logs', region_name='us-east-1')
-sns = boto3.client('sns', region_name='us-east-1')
+ec2 = boto3.client("ec2")
+dynamodb = boto3.resource("dynamodb")
+
+NACL_ID = os.environ["NACL_ID"]
+TABLE_NAME = os.environ["TABLE_NAME"]
+
+table = dynamodb.Table(TABLE_NAME)
+
+THRESHOLD = 5
+WINDOW_SECONDS = 60
+
 
 def lambda_handler(event, context):
-    # Lấy thông số từ Biến Môi Trường (Environment Variables)
-    ip_set_name = os.environ['IP_SET_NAME']
-    ip_set_id = os.environ['IP_SET_ID']
-    log_group_name = os.environ['LOG_GROUP_NAME']
-    sns_topic_arn = os.environ['SNS_TOPIC_ARN']
 
-    print(f"Bắt đầu quét CloudWatch Log Group: {log_group_name}")
+    print("Received CloudWatch Logs event")
 
-    # Truy vấn CloudWatch Logs trong khoảng 5 phút gần nhất
-    now = int(time.time() * 1000)
-    start_time = now - (5 * 60 * 1000)
+    # ==========================================
+    # 1. Decode CloudWatch Logs event
+    # ==========================================
 
-    query = "fields clientIp | filter action = 'BLOCK' | stats count(*) by clientIp"
-    start_query_response = logs.start_query(
-        logGroupName=log_group_name,
-        startTime=start_time,
-        endTime=now,
-        queryString=query
-    )
+    try:
 
-    query_id = start_query_response['queryId']
+        compressed_payload = base64.b64decode(
+            event["awslogs"]["data"]
+        )
 
-    # Chờ truy vấn hoàn tất
-    response = None
-    while response is None or response['status'] == 'Running':
-        time.sleep(1)
-        response = logs.get_query_results(queryId=query_id)
+        payload = gzip.decompress(
+            compressed_payload
+        )
 
-    extracted_ips = []
-    for result in response['results']:
-        for field in result:
-            if field['field'] == 'clientIp':
-                ip = field['value']
-                # Định dạng chuẩn CIDR cho WAF IP Set
-                formatted_ip = f"{ip}/128" if ":" in ip else f"{ip}/32"
-                extracted_ips.append(formatted_ip)
+        data = json.loads(payload)
 
-    if not extracted_ips:
-        print("Không tìm thấy IP vi phạm mới trong logs.")
-        return {'statusCode': 200, 'body': 'No IPs to block'}
+    except Exception as e:
 
-    # Lấy thông tin IP Set hiện tại từ AWS WAF
-    ip_set = wafv2.get_ip_set(
-        Name=ip_set_name,
-        Scope='CLOUDFRONT',
-        Id=ip_set_id
-    )
+        print("Failed to decode CloudWatch event:")
+        print(str(e))
 
-    current_addresses = ip_set['IPSet']['Addresses']
-    lock_token = ip_set['LockToken']
+        return {
+            "statusCode": 400,
+            "message": "Invalid CloudWatch Logs event"
+        }
 
-    # Thêm IP vi phạm mới vào danh sách chặn
-    updated_addresses = list(set(current_addresses + extracted_ips))
 
-    # Gọi API Cập nhật WAF IP Set
-    wafv2.update_ip_set(
-        Name=ip_set_name,
-        Scope='CLOUDFRONT',
-        Id=ip_set_id,
-        Addresses=updated_addresses,
-        LockToken=lock_token
-    )
+    # ==========================================
+    # 2. Process each SSH log
+    # ==========================================
 
-    print(f"Đã cập nhật thành công WAF IP Set. Danh sách IP bị chặn: {updated_addresses}")
-    return {'statusCode': 200, 'body': f"Blocked IPs: {extracted_ips}"}
+    for log_event in data["logEvents"]:
+
+        message = log_event["message"].strip()
+
+        print("SSH LOG:")
+        print(message)
+
+
+        # ==========================================
+        # 3. Extract attacker IP
+        # ==========================================
+
+        match = re.search(
+            r"Failed password.*from\s+(\d{1,3}(?:\.\d{1,3}){3})",
+            message
+        )
+
+        if not match:
+
+            print("No attacker IP found")
+
+            continue
+
+
+        attacker_ip = match.group(1)
+
+        print("ATTACKER IP:", attacker_ip)
+
+
+        # ==========================================
+        # 4. Validate IP
+        # ==========================================
+
+        try:
+
+            ipaddress.ip_address(attacker_ip)
+
+        except ValueError:
+
+            print("Invalid IP:", attacker_ip)
+
+            continue
+
+
+        # ==========================================
+        # 5. Create 1-minute bucket
+        # ==========================================
+
+        current_time = int(time.time())
+
+        minute_bucket = current_time // WINDOW_SECONDS
+
+        item_id = f"{attacker_ip}#{minute_bucket}"
+
+        expiration = current_time + 120
+
+
+        print("Counter ID:", item_id)
+
+
+        # ==========================================
+        # 6. Increase failure counter
+        # ==========================================
+
+        response = table.update_item(
+
+            Key={
+                "id": item_id
+            },
+
+            UpdateExpression="""
+                ADD failure_count :one
+                SET expires_at = if_not_exists(expires_at, :expiration)
+            """,
+
+            ExpressionAttributeValues={
+                ":one": 1,
+                ":expiration": expiration
+            },
+
+            ReturnValues="ALL_NEW"
+        )
+
+
+        failure_count = response["Attributes"]["failure_count"]
+
+
+        print(
+            "Failed attempts:",
+            failure_count,
+            "/",
+            THRESHOLD
+        )
+
+
+        # ==========================================
+        # 7. Check threshold
+        # ==========================================
+
+        if failure_count < THRESHOLD:
+
+            print(
+                f"{attacker_ip}: "
+                f"{failure_count}/{THRESHOLD} "
+                f"attempts - NOT BLOCKED"
+            )
+
+            continue
+
+
+        # ==========================================
+        # 8. Threshold reached
+        # ==========================================
+
+        print(
+            f"THRESHOLD REACHED: "
+            f"{attacker_ip}"
+        )
+
+
+        cidr = attacker_ip + "/32"
+
+
+        # ==========================================
+        # 9. Check existing NACL rules
+        # ==========================================
+
+        response = ec2.describe_network_acls(
+            NetworkAclIds=[NACL_ID]
+        )
+
+        used_rules = []
+
+        already_blocked = False
+
+
+        for acl in response["NetworkAcls"]:
+
+            for entry in acl["Entries"]:
+
+                used_rules.append(
+                    entry["RuleNumber"]
+                )
+
+                if (
+                    entry.get("CidrBlock") == cidr
+                    and entry.get("RuleAction") == "deny"
+                    and entry.get("Egress") is False
+                ):
+
+                    already_blocked = True
+
+                    break
+
+
+        if already_blocked:
+
+            print(
+                "IP already blocked:",
+                cidr
+            )
+
+            continue
+
+
+        # ==========================================
+        # 10. Find available rule number
+        # ==========================================
+
+        rule_number = 50
+
+        while rule_number in used_rules:
+
+            rule_number += 1
+
+
+        # ==========================================
+        # 11. Create NACL DENY rule
+        # ==========================================
+
+        try:
+
+            ec2.create_network_acl_entry(
+
+                NetworkAclId=NACL_ID,
+
+                RuleNumber=rule_number,
+
+                Protocol="-1",
+
+                RuleAction="deny",
+
+                Egress=False,
+
+                CidrBlock=cidr
+            )
+
+            print(
+                "SUCCESSFULLY BLOCKED:",
+                attacker_ip
+            )
+
+            print(
+                "NACL rule:",
+                rule_number
+            )
+
+        except Exception as e:
+
+            print(
+                "Failed to create NACL rule:"
+            )
+
+            print(str(e))
+
+
+    return {
+
+        "statusCode": 200,
+
+        "message":
+            "SSH brute-force detection processed"
+
+    }
 ```
-
 ---
 
-## 3. Xác định các tham số môi trường cần thiết
 
-Khi triển khai trên AWS Console ở các bước sau, bạn sẽ cần sử dụng các tham số cấu hình thống nhất sau:
-
-| Tham số             | Giá trị                             |
-| ------------------- | ----------------------------------- |
-| Region bắt buộc     | `us-east-1` (US East - N. Virginia) |
-| Tên WAF IP Set      | `AutoBlockedIPSetV6`                |
-| Tên WAF Web ACL     | `WebsiteProtectionACL`              |
-| Tên Log Group       | `aws-waf-logs-cloudfront`           |
-| Tên SNS Topic       | `WAFAlertTopic`                     |
-| Tên Lambda Function | `WAFAutoBlockFunction`              |
-
----
-
-## 4. Kết quả mong đợi
+## 3. Kết quả mong đợi
 
 Sau khi hoàn thành phần này, bạn sẽ:
 
-- Chuẩn bị thành công dự án website tĩnh.
-- Chuẩn bị sẵn đoạn mã nguồn Python (`lambda_function.py`) xử lý logic chặn IP tự động.
-- Nắm rõ danh sách các tên tài nguyên và thông số cấu hình chuẩn để triển khai trên AWS Management Console ở các phần tiếp theo.
+- Chuẩn bị sẵn sàng các kịch bản lệnh kiểm thử tấn công SSH Brute Force trên máy trạm cục bộ.
+- Tạo sẵn tệp mã nguồn Python ("lambda_function.py") xử lý logic bóc tách IP và kích hoạt phản ứng tự động.
+- Nắm rõ danh sách các tên tài nguyên, bảng lưu trữ và thông số cấu hình chuẩn để triển khai nhất quán trên AWS Management Console ở các phần tiếp theo.

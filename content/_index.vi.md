@@ -9,23 +9,23 @@ chapter: false
 
 ### Thông tin sinh viên:
 
-&emsp; **Họ và tên:** Vũ Văn Thanh Tùng
+&emsp; **Họ và tên:** Nguyễn Bá Luân
 
-&emsp; **Số điện thoại:** 0376734165
+&emsp; **Số điện thoại:** 0339650641
 
-&emsp; **Email:** tungvuvanthanh@gmail.com
+&emsp; **Email:** baluanhm2004@gmail.com
 
 &emsp; **Trường:** Đại học Xây dựng Hà Nội
 
 &emsp; **Chuyên ngành:** Công Nghệ Thông Tin
 
-&emsp; **Lớp:** 67PM2
+&emsp; **Lớp:** 67MHT
 
 &emsp; **Công ty thực tập:** Công ty TNHH Amazon Web Services Viet Nam
 
 &emsp; **Vị trí thực tập:** Workforce Bootcamp - First Cloud AI Journey
 
-&emsp; **Thời gian thực tập:** Từ ngày 18/07/2026 đến ngày 21/09/2026
+&emsp; **Thời gian thực tập:** Từ ngày 03/08/2026 đến ngày 25/09/2026
 
 ![Ảnh cá nhân](/images/avatar.jpg)
 

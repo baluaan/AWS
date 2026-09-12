@@ -9,23 +9,23 @@ chapter: false
 
 ### Student Information:
 
-&emsp; **Full Name:** Vũ Văn Thanh Tùng
+&emsp; **Full Name:** Nguyen Ba Luan
 
-&emsp; **Phone Number:** 0376734165
+&emsp; **Phone Number:** 039650641
 
-&emsp; **Email:** tungvuvanthanh@gmail.com
+&emsp; **Email:** baluanhm2004@gmail.com
 
 &emsp; **University:** Hanoi University of Civil Engineering
 
 &emsp; **Major:** Information Technology
 
-&emsp; **Class:** 67PM2
+&emsp; **Class:** 67MHT
 
 &emsp; **Internship Company:** Amazon Web Services Viet Nam Company Limited
 
 &emsp; **Internship Position:** Workforce Bootcamp - First Cloud AI Journey
 
-&emsp; **Internship Duration:** From 18/07/2026 to 21/09/2026
+&emsp; **Internship Duration:** From 03/08/2026 to 25/09/2026
 
 ![Your profile picture](/images/avatar.jpg)
 

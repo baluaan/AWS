@@ -1,6 +1,6 @@
 ---
 title: "Worklog - Tuần 8"
-date: 2026-09-05
+date: 2026-09-21
 weight: 8
 chapter: false
 pre: " <b> 1.8. </b> "
@@ -8,30 +8,24 @@ pre: " <b> 1.8. </b> "
 
 ### Mục tiêu tuần 8:
 
-- Kiểm thử tải & Giả lập tấn công: Sử dụng các công cụ stress test (Artillery, Apache JMeter) để giả lập kịch bản tấn công HTTP Flood / DDoS truy cập dồn dập vào hệ thống.
-
-- Kiểm thử tự động hóa End-to-End: Đánh giá toàn bộ luồng vận hành từ lúc phát sinh lượng truy cập bất thường -> WAF ghi log -> CloudWatch Log kích hoạt Alarm -> Lambda trích xuất IP vi phạm -> Cập nhật WAF Blocked IP Set -> Gửi cảnh báo qua Amazon SNS.
-
-- Đo lường & Tối ưu hiệu năng: Đánh giá độ trễ (latency) của quá trình ứng phó tự động, tinh chỉnh tham số Metric Filter, ngưỡng Alarm và thời gian gỡ chặn IP (TTL) để giảm thiểu tối đa tỷ lệ báo động giả (False Positives).
-
-- Tổng kết & Báo cáo nghiệm thu dự án: Thu thập dữ liệu thực nghiệm, hoàn thiện tài liệu kĩ thuật, lưu trữ các chỉ số đo lường và bàn giao hệ thống.
+- Tổng hợp và kết nối toàn bộ kiến thức AWS Cloud đã học qua 7 tuần thực tập.
+- Đánh giá và áp dụng mô hình chuẩn 5 trụ cột của kiến trúc AWS Well-Architected Framework vào dự án thực hành.
+- Rà soát, tối ưu hóa bảo mật và kiểm soát chi phí toàn bộ các tài nguyên đã khởi tạo.
+- Hoàn thiện báo cáo tổng kết kỳ thực tập AWS và dọn dẹp sạch sẽ tài nguyên trên AWS Console tránh phát sinh chi phí ngoài ý muốn.
 
 ### Các công việc cần triển khai trong tuần này:
 
-| Thứ | Công việc                                                                                                                                                                                                                       | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                          |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | --------------------------------------- |
-| 2   | - Chuẩn bị môi trường kiểm thử tải & giả lập tấn công.<br>- Cấu hình kịch bản mô phỏng HTTP Flood với Artillery/JMeter.<br>- Thực hiện phát lưu lượng truy cập dồn dập vượt ngưỡng từ IP thử nghiệm.                            | 07/09/2026   | 07/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Kiểm thử toàn diện luồng ứng phó tự động (End-to-End).<br>- Giám sát thời gian CloudWatch kích hoạt Alarm.<br>- Kiểm tra tính chính xác khi Lambda trích xuất IP và thêm vào WAF IP Set.<br>- Xác nhận email cảnh báo từ SNS. | 08/09/2026   | 08/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Đánh giá độ trễ & Tinh chỉnh cấu hình.<br>- Đo lường thời gian đáp ứng tổng thể của toàn bộ luồng tự động hóa.<br>- Điều chỉnh khoảng thời gian đánh giá (Evaluation Period) và ngưỡng Alarm để tối ưu độ nhạy.               | 09/09/2026   | 09/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Kiểm thử cơ chế tự động gỡ chặn IP (TTL).<br>- Xác minh khả năng tự động xóa IP khỏi danh sách chặn sau khoảng thời gian quy định.<br>- Kiểm thử khả năng phục hồi truy cập bình thường cho người dùng hợp lệ.                | 10/09/2026   | 10/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Tổng kết, hoàn thiện tài liệu & Báo cáo dự án.<br>- Tổng hợp báo cáo kết quả kiểm thử và chỉ số hiệu năng.<br>- Hoàn thiện sơ đồ kiến trúc hoàn chỉnh và tài liệu hướng dẫn vận hành hệ thống.                                | 11/09/2026   | 11/09/2026      | https://cloudjourney.awsstudygroup.com/ |
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --- | --- | --- | --- |
+| 2 | - Nghiên cứu tài liệu AWS Well-Architected Framework: 5 trụ cột cốt lõi (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization).<br>- Đánh giá lại sơ đồ kiến trúc các bài Lab đã làm theo tiêu chuẩn AWS Well-Architected. | 21/09/2026 | 21/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 3 | - Kiểm tra và tối ưu hóa bảo mật: Sử dụng AWS Trusted Advisor / IAM Access Analyzer để rà soát các Security Group bị mở sai quy định, kiểm tra Root Account và cấp quyền IAM. | 22/09/2026 | 22/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 4 | - Tối ưu hóa chi phí: Rà soát AWS Cost Explorer, kiểm tra các tài nguyên dư thừa (EBS Volumes không gắn vào máy chủ, Elastic IP không dùng, NAT Gateway nhàn rỗi). | 23/09/2026 | 23/09/2026 | Ứng dụng AWS Cost Explorer |
+| 5 | - Tổng hợp toàn bộ tài liệu Worklog, sơ đồ kiến trúc, mã nguồn Lambda/Dockerfile và kết quả thực hành của 8 tuần.<br>- Đóng gói báo cáo tổng kết kỳ thực tập AWS Cloud. | 24/09/2026 | 24/09/2026 | Tài liệu cá nhân |
+| 6 | - Thực hiện quy trình dọn dẹp tài nguyên triệt để (Resource Teardown): Xóa EC2, ECS Cluster, ECR Images, ALB, NAT Gateway, Custom VPC, CloudWatch Alarms và S3 Buckets.<br>- Báo cáo tổng kết tuần cuối với người hướng dẫn (Mentor). | 25/09/2026 | 25/09/2026 | AWS Management Console |
 
 ### Kết quả đạt được tuần 8:
 
-- Giả lập thành công kịch bản tấn công thực tế: Đã thực hiện kiểm thử tải thành công với kịch bản HTTP Flood, tạo ra lượng lưu lượng truy cập đủ lớn để kích hoạt các cơ chế bảo vệ của hệ thống.
-
-- Xác minh hoàn hảo luồng tự động hóa End-to-End: Hệ thống tự động phản ứng chính xác 100% trong thực tế: phát hiện truy cập bất thường, tự động đưa IP vào danh sách chặn WAF và gửi thông báo qua SNS trong thời gian ngắn.
-
-- Tối ưu hóa hiệu năng & Giảm thiểu báo động giả: Đo lường chính xác thời gian ứng phó toàn luồng, tinh chỉnh các tham số ngưỡng giúp hệ thống hoạt động ổn định, chính xác và giảm tối đa tác động tới người dùng hợp lệ.
-
-- Nghiệm thu & Bàn giao dự án: Hoàn thành toàn bộ báo cáo kĩ thuật, sơ đồ kiến trúc và bộ tài liệu hướng dẫn vận hành hệ thống tự động hóa ứng phó sự cố bảo mật trên AWS.
+- Hiểu rõ phương pháp luận thiết kế hệ thống theo chuẩn AWS Well-Architected Framework.
+- Phát hiện và khắc phục thành công các lỗ hổng bảo mật cơ bản cũng như các điểm lãng phí chi phí trên tài khoản thực hành.
+- Hoàn thành bộ báo cáo tổng kết kỳ thực tập chi tiết, hệ thống hóa đầy đủ kiến thức từ Core Services, Networking, Serverless đến Container.
+- Dọn dẹp hoàn toàn 100% tài nguyên thực hành trên AWS Console, đảm bảo số dư credit không bị phát sinh chi phí ngoài ý muốn.

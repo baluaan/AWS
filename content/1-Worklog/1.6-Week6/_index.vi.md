@@ -1,6 +1,6 @@
 ---
 title: "Worklog - Tuần 6"
-date: 2026-08-22
+date: 2026-09-07
 weight: 6
 chapter: false
 pre: " <b> 1.6. </b> "
@@ -8,30 +8,24 @@ pre: " <b> 1.6. </b> "
 
 ### Mục tiêu tuần 6:
 
-- Lập kế hoạch dự án & Phân tích an ninh mạng: Khảo sát các kịch bản tấn công web phổ biến (DDoS, HTTP Flood, Brute Force) và thiết kế mô hình kiến trúc hạ tầng tự động hóa trên AWS.
-
-- Triển khai lớp bảo vệ vùng biên: Cấu hình Amazon CloudFront Distribution làm điểm phân phối nội dung và kết nối với AWS WAF Web ACL để lọc lưu lượng HTTP/HTTPS.
-
-- Khởi tạo quy tắc lọc & Danh sách chặn: Thiết lập các WAF Managed Rules cơ bản và khởi tạo IP Set rỗng làm tiền đề cho việc tự động chặn IP ở các giai đoạn sau.
-
-- Thiết lập cơ chế ghi nhật ký & Giám sát: Bật WAF Logging, cấu hình chuyển giao dữ liệu log về CloudWatch Logs và theo dõi các chỉ số lưu lượng mạng ban đầu.
+- Tìm hiểu giải pháp cân bằng tải Elastic Load Balancer (ELB) và cơ chế tự động mở rộng Auto Scaling Group (ASG).
+- Phân biệt các loại Load Balancer: Application Load Balancer (ALB), Network Load Balancer (NLB).
+- Cấu hình ALB để phân phối lưu lượng truy cập tới nhiều EC2 Instances thuộc các Availability Zones khác nhau.
+- Thiết lập Auto Scaling Group kết hợp với Target Group để tự động co giãn số lượng máy chủ theo tải hệ thống.
 
 ### Các công việc cần triển khai trong tuần này:
 
-| Thứ | Công việc                                                                                                                                                                                   | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                          |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | --------------------------------------- |
-| 2   | - Lập kế hoạch dự án & thiết kế kiến trúc.<br>- Phân tích bài toán bảo mật ứng dụng web.<br>- Vẽ sơ đồ kiến trúc tổng quan hệ thống tự động hóa phản ứng tấn công.                          | 24/08/2026   | 24/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Triển khai phân phối vùng biên với CloudFront.<br>- Khởi tạo Amazon CloudFront distribution.<br>- Trỏ gốc ứng dụng web về CDN để tối ưu hóa lưu lượng và chặn truy cập từ xa.             | 25/08/2026   | 25/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Cấu hình tường lửa AWS WAF.<br>- Tạo Web ACL trên AWS WAF và đính kèm vào CloudFront.<br>- Định nghĩa các AWS Managed Rule Groups tiêu chuẩn.<br>- Khởi tạo IP Set rỗng (Blocked IP Set). | 26/08/2026   | 26/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Cấu hình hệ thống ghi log tập trung.<br>- Bật tính năng WAF Logging.<br>- Định tuyến log truy cập trực tiếp về Amazon CloudWatch Log Group.                                               | 27/08/2026   | 27/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Đánh giá chỉ số lưu lượng.<br>- Phân tích cấu trúc dữ liệu log thu thập được từ CloudWatch.<br>- Tinh chỉnh cấu hình vùng biên.                                                           | 28/08/2026   | 28/08/2026      | https://cloudjourney.awsstudygroup.com/ |
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --- | --- | --- | --- |
+| 2 | - Tìm hiểu tổng quan Elastic Load Balancing (ELB): Nguyên lý hoạt động, Target Group, Health Checks.<br>- So sánh sự khác biệt giữa ALB (Layer 7 - HTTP/HTTPS) và NLB (Layer 4 - TCP/UDP). | 07/09/2026 | 07/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 3 | - Khởi tạo 2 EC2 Instances chạy Web Server ở 2 Subnet/AZ khác nhau.<br>- Tạo Application Load Balancer (ALB) công khai, cấu hình Target Group và gắn 2 EC2 Instances vào Target Group.<br>- Kiểm tra khả năng cân bằng tải bằng cách truy cập IP/DNS Name của ALB. | 08/09/2026 | 08/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 4 | - Tìm hiểu AWS Auto Scaling Group (ASG): Khái niệm Launch Template / Launch Configuration, Desired Capacity, Min Capacity, Max Capacity.<br>- Tạo Launch Template đóng gói sẵn cấu hình EC2 Web Server. | 09/09/2026 | 09/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 5 | - Khởi tạo Auto Scaling Group gắn với Launch Template và Target Group của ALB.<br>- Cấu hình Scaling Policies (Dynamic Scaling dựa trên Target Tracking: Giữ CPU trung bình ở mức 50%). | 10/09/2026 | 10/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 6 | - Thực hành Lab Stress Test: Dùng công cụ (stress/ab) ép CPU của EC2 tăng cao để kiểm tra cơ chế Auto Scaling tự động thêm Instance mới.<br>- Kiểm tra cơ chế Scale In khi tải giảm và dọn dẹp tài nguyên. | 11/09/2026 | 11/09/2026 | https://cloudjourney.awsstudygroup.com/ |
 
 ### Kết quả đạt được tuần 6:
 
-- Hoàn thành thiết kế kiến trúc tổng quan: Đã phân tích thành công các kịch bản tấn công web và thống nhất sơ đồ kiến trúc ứng phó sự cố an toàn thông tin tự động hóa dựa trên các dịch vụ Cloud-Native.
-
-- Triển khai thành công phân phối vùng biên: Đã cấu hình Amazon CloudFront làm CDN phía trước hệ thống, đảm bảo khả năng chặn lưu lượng xấu ngay từ vòng ngoài (Edge Location).
-
-- Khởi tạo hạ tầng AWS WAF & IP Set: Đã thiết lập WAF Web ACL liên kết với CloudFront, cấu hình các bộ quy tắc bảo vệ cơ bản và khởi tạo sẵn danh sách IP đen (IP Set) phục vụ cho tự động hóa.
-
-- Triển khai hệ thống ghi log tập trung: Đã bật tính năng WAF Logging và tích hợp thành công dữ liệu log truy cập thời gian thực về CloudWatch Logs.
+- Hiểu rõ nguyên lý hoạt động của ELB và kiến trúc chịu lỗi cao (High Availability) trên nhiều AZs.
+- Cấu hình thành công Application Load Balancer (ALB) điều hướng traffic thông minh và kiểm tra Health Check chuẩn xác.
+- Tạo thành công Launch Template và cấu hình Auto Scaling Group (ASG) co giãn linh hoạt theo nhu cầu thực tế.
+- Kiểm thử thành công kịch bản High Availability: Hệ thống tự động khởi tạo máy chủ mới khi bị quá tải và tự động giảm số lượng máy chủ khi hết tải để tối ưu chi phí.

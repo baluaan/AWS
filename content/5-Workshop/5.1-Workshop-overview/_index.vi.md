@@ -1,6 +1,6 @@
 ---
 title: "Tổng quan Workshop"
-date: 2026-08-24
+date: 2026-09-11
 weight: 1
 chapter: false
 pre: " <b> 5.1. </b> "
@@ -8,57 +8,50 @@ pre: " <b> 5.1. </b> "
 
 ### Mục tiêu
 
-Workshop này hướng dẫn triển khai giải pháp **Automated Threat Protection** (Phản ứng và ngăn chặn tấn công tự động) cho website tĩnh trên nền tảng AWS bằng cách sử dụng kiến trúc Cloud-Native Serverless, các dịch vụ bảo mật được quản lý (Managed Services) và quy trình tự động hóa ứng phó sự cố. Sau khi hoàn thành workshop, bạn sẽ có thể xây dựng một hệ thống bảo vệ ứng dụng web hoàn chỉnh với khả năng tự động phát hiện, gửi cảnh báo và chặn địa chỉ IP vi phạm ở lớp Edge mà không cần sự can thiệp thủ công.
+Workshop này hướng dẫn triển khai giải pháp **AWS SSH Automated Threat Protection** (Phản ứng và ngăn chặn tấn công tự động) cho máy chủ EC2 Linux trên nền tảng AWS bằng cách sử dụng kiến trúc Cloud-Native Serverless, các dịch vụ an toàn thông tin được quản lý (Managed Services) và quy trình tự động hóa ứng phó sự cố. Sau khi hoàn thành workshop, bạn sẽ có thể xây dựng một hệ thống bảo vệ máy chủ SSH hoàn chỉnh với khả năng tự động thu thập log, đếm tần suất vi phạm, gửi cảnh báo và tạo quy tắc chặn địa chỉ IP vi phạm ở tầng mạng Subnet (Network ACL) mà không cần sự can thiệp thủ công của quản trị viên.
 
 ---
 
 ## 1. Giới thiệu bài toán và giải pháp
 
-Hiện nay, các website và ứng dụng web luôn là mục tiêu hàng đầu của các cuộc tấn công mạng tự động như HTTP Flood, Brute Force, Web Scraping hay DDoS. Khi xảy ra tấn công, quy trình phản ứng truyền thống đòi hỏi kỹ sư vận hành phải kiểm tra log thủ công, trích xuất IP độc hại và thêm vào firewall bằng tay. Quy trình này mất nhiều thời gian, dẫn đến thời gian gián đoạn dịch vụ kéo dài và gây quá tải hệ thống.
+Giao thức SSH (Secure Shell) là phương thức phổ biến để quản trị từ xa các máy chủ Linux. Tuy nhiên, việc mở cổng SSH (Port 22) ra Internet khiến các máy chủ EC2 thường xuyên trở thành mục tiêu hàng đầu của các cuộc tấn công dò quét mật khẩu (SSH Brute-force và Password Guessing). Khi xảy ra tấn công, quy trình phản ứng truyền thống đòi hỏi kỹ sư vận hành phải kiểm tra file log thủ công (`/var/log/auth.log`), trích xuất IP độc hại và thêm quy tắc chặn bằng tay. Quy trình này mất nhiều thời gian, dẫn đến thời gian gián đoạn dịch vụ và nguy cơ máy chủ bị chiếm quyền điều khiển.
 
-Thay vì xử lý thủ công, workshop này áp dụng giải pháp **Automated Threat Protection** dựa trên kiến trúc Serverless Security trên AWS. Website tĩnh được lưu trữ an toàn trên **Amazon S3 (Origin)** và phân phối toàn cầu thông qua CDN **Amazon CloudFront**.
+Thay vì xử lý thủ công, workshop này áp dụng giải pháp **AWS SSH Automated Threat Protection** dựa trên kiến trúc Serverless Security trên AWS. Máy chủ **Amazon EC2 (Ubuntu Linux)** đóng vai trò là hạ tầng dịch vụ cần bảo vệ.
 
-Lưu lượng truy cập qua CloudFront được kiểm soát bởi **AWS WAF**. Khi có lưu lượng bất thường vượt quá ngưỡng cho phép, **Amazon CloudWatch** sẽ phát hiện và chuyển sang trạng thái báo động, gửi tín hiệu đến **Amazon SNS**. **Amazon SNS** vừa gửi email thông báo tức thời cho quản trị viên, vừa kích hoạt hàm **AWS Lambda**. Hàm Lambda tự động truy vấn **CloudWatch Logs**, bóc tách địa chỉ IP vi phạm và cập nhật trực tiếp vào **AWS WAF IP Set** để chặn truy cập vĩnh viễn ở lớp Edge.
+Toàn bộ log đăng nhập hệ thống được CloudWatch Agent đẩy tập trung về **Amazon CloudWatch Logs**. **CloudWatch Subscription Filter** sẽ lọc các chuỗi sự kiện `Failed password` và đẩy dữ liệu trực tiếp sang **AWS Lambda**. Hàm Lambda giải mã dữ liệu, trích xuất địa chỉ IP nguồn và cập nhật bộ đếm trong **Amazon DynamoDB** theo cửa sổ thời gian 1 phút. Khi số lần đăng nhập thất bại vượt quá ngưỡng quy định (**5 lần/1 phút**), hệ thống gửi tin nhắn cảnh báo qua email bằng **Amazon SNS** và **AWS Lambda** tự động gọi API tạo quy tắc `DENY` trên **Network ACL (NACL)** để chặn vĩnh viễn địa chỉ IP nguồn dạng `/32` ngay ở tầng mạng Subnet, loại bỏ hoàn toàn lưu lượng tấn công trước khi nó tiếp cận máy chủ EC2.
 
 ---
 
 ## 2. Kiến trúc hệ thống
 
-Kiến trúc giải pháp **Automated Threat Protection** được triển khai theo mô hình Serverless trên AWS (Region `us-east-1`), được chia thành 3 nhóm chức năng chính:
+Kiến trúc giải pháp **AWS SSH Automated Threat Protection** được triển khai theo mô hình Serverless trên AWS, được chia thành 3 nhóm chức năng chính:
 
-- **Edge Protection Layer (Lớp bảo vệ ranh giới):** Bao gồm **Amazon S3** (Origin lưu trữ website tĩnh), **Amazon CloudFront** (CDN phân phối nội dung) và **AWS WAF** (Tường lửa ứng dụng Web kết hợp WAF IP Set).
-- **Monitoring & Detection Layer (Lớp giám sát & Phát hiện):** Bao gồm **CloudWatch Logs Stream** (Log Group `aws-waf-logs-cloudfront`) thu thập log truy cập từ WAF và **CloudWatch Metric Alarm** giám sát chỉ số lưu lượng bất thường.
-- **Automation & Alerting Layer (Lớp tự động hóa & Cảnh báo):** Bao gồm **Amazon SNS Topic** đóng vai trò điều phối trung tâm để gửi **Email Notification** tới người quản trị và kích hoạt (**Trigger**) hàm **AWS Lambda** tự động xử lý.
+- **Data Collection & Ingestion Layer (Lớp thu thập & Quản lý Log):** Bao gồm **Amazon EC2 Ubuntu** (Máy chủ SSH), **CloudWatch Agent** (Thu thập `/var/log/auth.log`) và **CloudWatch Logs Group** (Lưu trữ log đăng nhập tập trung).
+- **Processing & State Management Layer (Lớp xử lý & Quản lý trạng thái):** Bao gồm **Subscription Filter** (Lọc pattern `Failed password`), **AWS Lambda** (Hàm Serverless giải mã, bóc tách IP và gọi API) và **Amazon DynamoDB** (Lưu giữ bộ đếm số lần thất bại theo IP trong 1 phút).
+- **Remediation & Perimeter Enforcement Layer (Lớp phản ứng & Ngăn chặn ranh giới):** Bao gồm **Amazon SNS** (Gửi mail cảnh báo sự cố), **Network ACL (NACL)** thực thi quy tắc `DENY` `/32` chặn kết nối IP tấn công ở tầng mạng Subnet và **AWS IAM Role** (Cấp quyền an toàn cho Lambda).
 
-**Hình 1 – Kiến trúc hệ thống Automated Threat Protection**
+**Hình 1 – Kiến trúc hệ thống AWS SSH Automated Threat Protection**
 
-![Kiến trúc hệ thống](/images/Workshop/Workshop-overview/system_architecture.png)
+![Kiến trúc hệ thống](/images/proposal/system_architecture1.png)
 
 ---
 
 ## 3. Quy trình hoạt động của hệ thống
 
-Luồng xử lý chính của hệ thống diễn ra theo các bước sau:
+Luồng xử lý chính của hệ thống diễn ra theo 12 bước:
 
-1. Người dùng gửi yêu cầu HTTP/HTTPS truy cập website thông qua **Amazon CloudFront Distribution**.
-
-2. CloudFront chuyển tiếp yêu cầu đến **Amazon S3 Bucket (Origin)** để lấy nội dung website tĩnh và trả về cho người dùng.
-
-3. **AWS WAF** kiểm tra toàn bộ lưu lượng truy cập qua CloudFront. Khi lượng request từ một IP vượt quá ngưỡng quy định, WAF kích hoạt Rate-based Rule trả về mã lỗi `403 Forbidden` và đẩy toàn bộ access log về **CloudWatch Logs**.
-
-4. **CloudWatch Alarm** liên tục giám sát chỉ số `BlockedRequests`. Khi chỉ số này vượt ngưỡng thiết lập trong khoảng thời gian quy định, Alarm chuyển sang trạng thái _In Alarm_.
-
-5. CloudWatch Alarm gửi ngay tín hiệu cảnh báo đến **Amazon SNS Topic** (`WAFAlertTopic`).
-
-6. **Amazon SNS** gửi email thông báo sự cố tức thì đến hộp thư của quản trị viên (Gmail).
-
-7. Đồng thời, **Amazon SNS** làm Trigger kích hoạt hàm **AWS Lambda** (`WAFAutoBlockFunction`) thực thi.
-
-8. Hàm Lambda truy vấn **CloudWatch Log Group** (`aws-waf-logs-cloudfront`), lọc và trích xuất địa chỉ IP (`clientIp`) gây ra vi phạm.
-
-9. Lambda định dạng địa chỉ IP chuẩn CIDR (IPv6/128 hoặc IPv4/32) và gọi API WAF (`UpdateIPSet`) để cập nhật IP vi phạm vào danh sách **WAF IP Set V6** (`AutoBlockedIPSetV6`).
-
-10. AWS WAF áp dụng IP Set Rule mới, tự động chặn vĩnh viễn tất cả các yêu cầu tiếp theo từ địa chỉ IP vi phạm ngay tại lớp Edge của CloudFront.
+1. Kẻ tấn công (Attacker) thực hiện các lượt đăng nhập SSH không hợp lệ vào máy chủ **Amazon EC2 Ubuntu**.
+2. SSH Server trên EC2 ghi nhận sự kiện đăng nhập thất bại vào file nhật ký hệ thống `/var/log/auth.log`.
+3. **CloudWatch Agent** cài trên EC2 tự động đẩy dữ liệu log mới về **CloudWatch Logs Group**.
+4. **Subscription Filter** quét log, phát hiện các chuỗi sự kiện khớp với cấu hình pattern `Failed password` và gửi payload sự kiện đến **AWS Lambda**.
+5. **AWS Lambda** giải mã dữ liệu nén, sử dụng biểu thức chính quy (Regex) để bóc tách chính xác địa chỉ IP nguồn (`clientIp`).
+6. Lambda truy vấn và cập nhật tăng bộ đếm số lần đăng nhập thất bại cho địa chỉ IP đó trong bảng **Amazon DynamoDB**.
+7. Lambda kiểm tra tổng số lần thất bại trong khoảng thời gian 1 phút gần nhất.
+8. Nếu số lần thất bại nhỏ hơn 5, Lambda kết thúc lượt xử lý và hệ thống tiếp tục duy trì giám sát.
+9. Nếu số lần thất bại đạt từ **5 lần/1 phút** trở lên, hệ thống gửi tin nhắn cảnh báo qua mail bằng dịch vụ **Amazon SNS** và Lambda kích hoạt quy trình phản ứng tự động.
+10. Lambda kiểm tra danh sách quy tắc hiện tại trên **Network ACL** gắn với Subnet chứa EC2.
+11. Nếu IP chưa có trong danh sách chặn, Lambda tự động chèn một quy tắc `DENY` cho IP vi phạm dưới dạng CIDR `/32`.
+12. Network ACL lập tức từ chối mọi gói tin kết nối SSH từ địa chỉ IP vi phạm ngay tại tầng mạng ranh giới Subnet.
 
 ---
 
@@ -66,28 +59,26 @@ Luồng xử lý chính của hệ thống diễn ra theo các bước sau:
 
 Workshop sử dụng các dịch vụ AWS sau:
 
-### Lưu trữ và Phân phối
+### Hạ tầng và Lưu trữ Nhật ký
 
-- Amazon S3 (Origin Storage)
-- Amazon CloudFront (Content Delivery Network - CDN)
+- **Amazon EC2:** Máy chủ Linux Ubuntu 22.04 LTS chạy dịch vụ SSH Server.
+- **Amazon CloudWatch Logs:** Thu thập, lưu trữ và quản lý log đăng nhập SSH tập trung.
+- **CloudWatch Subscription Filter:** Quét và lọc thông tin log sự kiện theo dạng mẫu (Pattern Matching).
 
-### An ninh và Bảo mật
+### Quản lý Trạng thái, Cảnh báo và Tự động hóa
 
-- AWS WAF (Web Application Firewall - Rate-based Rule & IP Set Rule)
-- AWS IAM (Identity and Access Management - Least Privilege Policy)
+- **AWS Lambda:** Thực thi mã Python 3.12 (sử dụng AWS Boto3 SDK) xử lý logic bóc tách IP, kích hoạt cảnh báo và tự động gọi API.
+- **Amazon DynamoDB:** Cơ sở dữ liệu NoSQL lưu trữ bộ đếm số lần thất bại theo IP và cửa sổ thời gian.
+- **Amazon SNS:** Dịch vụ phát tin nhắn cảnh báo tự động qua Email tới quản trị viên.
 
-### Giám sát và Cảnh báo
+### An ninh và Phân quyền
 
-- Amazon CloudWatch (Logs Group `aws-waf-logs-cloudfront` & Metrics Alarm)
-- Amazon SNS (Simple Notification Service)
-
-### Tính toán Serverless & Tự động hóa
-
-- AWS Lambda (Runtime Python 3.12 với Boto3 SDK)
+- **Network Access Control List (NACL):** Tường lửa stateless ở tầng Subnet thực thi quy tắc `DENY`.
+- **AWS IAM:** Quản lý quyền hạn thực thi an toàn giữa các dịch vụ theo nguyên tắc tối thiểu (Least Privilege).
 
 ### Công cụ kiểm thử
 
-- PowerShell / Bash CLI (`Invoke-WebRequest` / `curl`)
+- OpenSSH CLI / Bash Script (Giả lập chuỗi tấn công Brute-force SSH).
 
 ---
 
@@ -95,11 +86,10 @@ Workshop sử dụng các dịch vụ AWS sau:
 
 Sau khi hoàn thành workshop, bạn sẽ có thể:
 
-- Host thành công một website tĩnh trên Amazon S3 và phân phối an toàn qua Amazon CloudFront.
-- Cấu hình AWS WAF kết hợp Rate-based Rule và IP Set Rule để lọc và xử lý lưu lượng bất thường ở lớp Edge.
-- Bật WAF Logging và dẫn log tập trung về Amazon CloudWatch Logs Group.
-- Thiết lập CloudWatch Alarm giám sát chỉ số request bị chặn và gửi tín hiệu sang Amazon SNS.
-- Khởi tạo Amazon SNS Topic để gửi email cảnh báo tự động cho quản trị viên.
-- Xây dựng và phân quyền cho hàm AWS Lambda bằng Python để tự động trích xuất IP vi phạm từ CloudWatch Logs và cập nhật WAF IP Set.
-- Thực thi kịch bản giả lập tấn công (HTTP Flood) để kiểm thử toàn bộ luồng chặn tự động của hệ thống.
-- Thực hiện quy trình dọn dẹp tài nguyên an toàn sau khi hoàn thành workshop để tránh phát sinh chi phí.
+- Khởi tạo máy chủ EC2 Ubuntu, cấu hình SSH và cài đặt CloudWatch Agent để đẩy log `/var/log/auth.log` tập trung.
+- Cấu hình CloudWatch Subscription Filter với pattern `Failed password` để lọc sự kiện đăng nhập thất bại.
+- Tạo bảng Amazon DynamoDB để duy trì bộ đếm tần suất truy cập theo IP và khoảng thời gian 1 phút cùng topic Amazon SNS gửi email cảnh báo.
+- Lập trình hàm AWS Lambda bằng Python 3.12 bóc tách IP vi phạm, tương tác với DynamoDB, phát bản tin SNS và gọi API thao tác với Network ACL.
+- Phân quyền IAM Role chính xác cho Lambda tương tác an toàn với CloudWatch Logs, DynamoDB, Amazon SNS và EC2 Network ACL.
+- Thực thi kịch bản giả lập tấn công SSH Brute-force để xác minh luồng gửi mail cảnh báo từ Amazon SNS và tự động thêm quy tắc `DENY` `/32` trên Network ACL.
+- Thực hiện quy trình dọn dẹp tài nguyên an toàn sau khi hoàn thành workshop để tránh phát sinh chi phí duy trì.

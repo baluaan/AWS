@@ -1,6 +1,6 @@
 ---
-title: "Week 2 - Worklog"
-date: 2026-07-25
+title: "Worklog - Week 2"
+date: 2026-08-10
 weight: 2
 chapter: false
 pre: " <b> 1.2. </b> "
@@ -8,30 +8,24 @@ pre: " <b> 1.2. </b> "
 
 ### Week 2 Objectives:
 
-- Master AWS Networking Fundamentals: Gain in-depth knowledge of VPC architecture, Subnets, Route Tables, Internet/NAT Gateways, and network security mechanisms (Security Groups, NACLs, VPC Flow Logs).
+- Deep dive into AWS Core Services: IAM, S3, and EC2.
+- Master identity and access management mechanisms (Users, Groups, Roles, JSON Policies).
+- Understand object storage concepts with Amazon S3 (Buckets, Storage Classes, Bucket Policies, Versioning).
+- Master Virtual Cloud Servers with Amazon EC2 (Instance Types, Key Pairs, Security Groups, EBS) and deploy a simple Web Server.
 
-- Deploy Secure Network Infrastructure: Configure secure connectivity using EC2 Instance Connect Endpoints, establish Site-to-Site VPN connections, and set up VPC Peering.
+### Tasks to be implemented this week:
 
-- Integrate Hybrid DNS & Identity Services: Set up Hybrid DNS using Route 53 Resolver, deploy Microsoft Active Directory on AWS, and establish access via RDGW.
+| Day | Task Description | Start Date | End Date | Resource / Documentation |
+| --- | --- | --- | --- | --- |
+| Mon | - Advanced IAM Study: Differentiate between Users, Groups, Roles, and Inline/Managed Policies (JSON syntax).<br>- Practice creating IAM users, granting restricted permissions, setting up AWS Account Aliases, and testing login flow. | 08/10/2026 | 08/10/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Tue | - Study Amazon S3 object storage: Bucket naming conventions, Storage Classes (Standard, Intelligent-Tiering, Glacier).<br>- Practice creating S3 Buckets, uploading objects, configuring Public Access Block, and applying Bucket Policies. | 08/11/2026 | 08/11/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Wed | - Study Amazon EC2: Instance families (t2.micro/t3.micro), AMIs, Key Pairs, and Elastic Block Store (EBS).<br>- Launch a virtual machine running Amazon Linux 2 / Ubuntu. | 08/12/2026 | 08/12/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Thu | - Configure Security Groups for EC2: Allow inbound HTTP (80), HTTPS (443), and SSH (22).<br>- SSH into the EC2 instance via SSH CLI/PuTTY using SSH Key Pairs.<br>- Install Apache/Nginx web server on EC2 to serve a test web page. | 08/13/2026 | 08/13/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Fri | - Configure Amazon S3 Static Website Hosting integrated with EC2 resources.<br>- Complete Lab review on AWS Core Services and terminate unused EC2/S3 resources. | 08/14/2026 | 08/14/2026 | https://cloudjourney.awsstudygroup.com/ |
 
-- Implement Monitoring & Automation: Deploy CloudWatch Monitoring, initialize infrastructure using CloudFormation templates, and refine security group configurations.
+### Key Achievements in Week 2:
 
-### Tasks to be carried out this week:
-
-| Day | Task                                                                                                                                                                                                                                                                                                   | Start Date | Completion Date | Reference Material                      |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------------- | --------------------------------------- |
-| 2   | - Learn about VPC: Concepts, architecture and scope, core components: Subnets, Route Tables, Internet Gateways, NAT Gateways.<br>- Learn about Firewall in VPC: Security Groups, Network ACLs, VPC Resource Map.<br>- Create VPC.<br>- Create Subnets.<br>- Create Internet Gateway.                   | 27/07/2026 | 27/07/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Create Route Table.<br>- Create Security Group.<br>- Enable VPC Flow Logs.                                                                                                                                                                                                                           | 28/07/2026 | 28/07/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Create NAT Gateway.<br>- Create EC2 Instance Connect Endpoint.<br>- Deploy CloudWatch Monitoring.<br>- Configure Site-to-Site VPN:<br> + Set up VPN environment: Create VPN for VPC, create EC2 instance.<br> + Configure VPN Connection: Create Virtual Private Gateway, create Customer Gateway... | 29/07/2026 | 29/07/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Set up Hybrid DNS with Route 53 Resolver.<br>- Generate key pair.<br>- Initialize cloudformation template. <br> - Configuring security group. <br> - Connecting to RDGW. <br> - Deploy Microsoft AD. <br> - Set up DNS.                                                                              | 30/07/2026 | 30/07/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Setting up VPC Peering.<br>- Update Network ACL.<br>- Create Peering Connection. <br> - Set up Cross-Peer DNS.                                                                                                                                                                                       | 31/07/2026 | 31/07/2026      | https://cloudjourney.awsstudygroup.com/ |
-
-### Week 2 Achievements:
-
-- Successfully Built Core VPC Infrastructure: Provisioned a complete custom VPC with Public/Private Subnets, Route Tables, Internet Gateway, NAT Gateway, and enabled VPC Flow Logs for traffic inspection.
-
-- Established Secure Connectivity & Peering: Deployed EC2 Instance Connect Endpoint, configured a Site-to-Site VPN (Virtual Private Gateway & Customer Gateway), and linked VPCs via VPC Peering with Cross-Peer DNS and updated NACLs.
-
-- Deployed Advanced DNS & Directory Services: Integrated Route 53 Resolver for Hybrid DNS resolution and successfully launched Microsoft Active Directory with RDGW using CloudFormation templates.
-
-- Configured Centralized Monitoring: Fully enabled CloudWatch Monitoring across the newly established network and instance infrastructure.
+- Gained hands-on experience in IAM permission management: Successfully created users, custom IAM Roles, and JSON policy structures.
+- Mastered Amazon S3 configuration: Successfully hosted static content, configured bucket policies, and understood storage lifecycle rules.
+- Successfully provisioned EC2 Instances: Selected proper AMIs, generated SSH Key Pairs, and secured instances using Security Groups.
+- Successfully completed hands-on lab: Deployed an operational Nginx/Apache Web Server on EC2 accessible via Public IP.

@@ -1,6 +1,6 @@
 ---
 title: "Project Preparation"
-date: 2026-08-24
+date: 2026-09-11
 weight: 3
 chapter: false
 pre: " <b> 5.3. </b> "
@@ -8,135 +8,313 @@ pre: " <b> 5.3. </b> "
 
 ### Objective
 
-In this section, you will prepare the static website source code and the Python automation script configuration for AWS Lambda before deploying to AWS infrastructure. You will also verify the source code structure to ensure a smooth deployment process.
+In this section, you will prepare the Python automation script configuration file for AWS Lambda and ready the SSH attack simulation test scripts prior to deployment on the AWS infrastructure. You will also understand the standard list of parameters and resource names to ensure a seamless deployment process.
 
 ---
 
-## 1. Prepare the Static Website Source Code
+## 1. Prepare SSH Brute Force Test Scripts on Local Workstation
 
-This project uses a static website (HTML/CSS/JS) as the protected asset. The sample website source code is hosted on GitHub:
-[https://github.com/vutungvn/portfolio](https://github.com/vutungvn/portfolio)
+This project uses an Amazon EC2 Ubuntu server as the target object protected from SSH password guessing attacks. To prepare for testing the automated incident response system, ready the following test commands on your local Terminal or PowerShell:
 
-To download the website source code to your local machine, open Terminal or PowerShell and run the following commands:
+Execute a manual SSH connection test command (simulating an invalid password login):
+"ssh invalid_user@<EC2_PUBLIC_IP>"
 
-```bash
-# Clone the repository containing the website source code
-git clone https://github.com/vutungvn/portfolio.git
-
-# Move into the project directory
-cd portfolio
-```
-
-The interface after a successful run:
-
-![Running the application](/images/Workshop/Project-foundation/run-localhost.png)
+Or prepare the Hydra tool to execute automated high-frequency Brute Force attack simulations (to trigger the violation threshold of ≥ 5 times/1 min):
+"hydra -l admin -P passwords.txt <EC2_PUBLIC_IP> ssh -t 4"
 
 ---
 
-## 2. Prepare the AWS Lambda Function Source Code (Python)
+## 2. Prepare AWS Lambda Function Source Code (Python)
 
-Create a `lambda_function.py` file on your local machine. This Python code will be deployed to AWS Lambda in Step 5.8 to extract offending IPs from CloudWatch Logs and automatically update the WAF IP Set.
+Create a "lambda_function.py" file saved on your local machine. This Python script will be uploaded to the AWS Lambda service in subsequent steps to decode CloudWatch log data, extract offending IP addresses, update counters in Amazon DynamoDB, send alerts via Amazon SNS, and automatically insert "DENY" rules into the Network ACL (NACL).
 
-```python
-import os
 import boto3
+import os
+import ipaddress
+import base64
+import gzip
 import json
+import re
 import time
 
-# Initialize AWS SDK clients
-wafv2 = boto3.client('wafv2', region_name='us-east-1')
-logs = boto3.client('logs', region_name='us-east-1')
-sns = boto3.client('sns', region_name='us-east-1')
+ec2 = boto3.client("ec2")
+dynamodb = boto3.resource("dynamodb")
+
+NACL_ID = os.environ["NACL_ID"]
+TABLE_NAME = os.environ["TABLE_NAME"]
+
+table = dynamodb.Table(TABLE_NAME)
+
+THRESHOLD = 5
+WINDOW_SECONDS = 60
+
 
 def lambda_handler(event, context):
-    # Get parameters from Environment Variables
-    ip_set_name = os.environ['IP_SET_NAME']
-    ip_set_id = os.environ['IP_SET_ID']
-    log_group_name = os.environ['LOG_GROUP_NAME']
-    sns_topic_arn = os.environ['SNS_TOPIC_ARN']
 
-    print(f"Starting scan of CloudWatch Log Group: {log_group_name}")
+    print("Received CloudWatch Logs event")
 
-    # Query CloudWatch Logs for the last 5 minutes
-    now = int(time.time() * 1000)
-    start_time = now - (5 * 60 * 1000)
+    # ==========================================
+    # 1. Decode CloudWatch Logs event
+    # ==========================================
 
-    query = "fields clientIp | filter action = 'BLOCK' | stats count(*) by clientIp"
-    start_query_response = logs.start_query(
-        logGroupName=log_group_name,
-        startTime=start_time,
-        endTime=now,
-        queryString=query
-    )
+    try:
 
-    query_id = start_query_response['queryId']
+        compressed_payload = base64.b64decode(
+            event["awslogs"]["data"]
+        )
 
-    # Wait for the query to complete
-    response = None
-    while response is None or response['status'] == 'Running':
-        time.sleep(1)
-        response = logs.get_query_results(queryId=query_id)
+        payload = gzip.decompress(
+            compressed_payload
+        )
 
-    extracted_ips = []
-    for result in response['results']:
-        for field in result:
-            if field['field'] == 'clientIp':
-                ip = field['value']
-                # Format as standard CIDR for the WAF IP Set
-                formatted_ip = f"{ip}/128" if ":" in ip else f"{ip}/32"
-                extracted_ips.append(formatted_ip)
+        data = json.loads(payload)
 
-    if not extracted_ips:
-        print("No new offending IPs found in the logs.")
-        return {'statusCode': 200, 'body': 'No IPs to block'}
+    except Exception as e:
 
-    # Get the current IP Set information from AWS WAF
-    ip_set = wafv2.get_ip_set(
-        Name=ip_set_name,
-        Scope='CLOUDFRONT',
-        Id=ip_set_id
-    )
+        print("Failed to decode CloudWatch event:")
+        print(str(e))
 
-    current_addresses = ip_set['IPSet']['Addresses']
-    lock_token = ip_set['LockToken']
+        return {
+            "statusCode": 400,
+            "message": "Invalid CloudWatch Logs event"
+        }
 
-    # Add the new offending IPs to the block list
-    updated_addresses = list(set(current_addresses + extracted_ips))
 
-    # Call the API to update the WAF IP Set
-    wafv2.update_ip_set(
-        Name=ip_set_name,
-        Scope='CLOUDFRONT',
-        Id=ip_set_id,
-        Addresses=updated_addresses,
-        LockToken=lock_token
-    )
+    # ==========================================
+    # 2. Process each SSH log
+    # ==========================================
 
-    print(f"Successfully updated the WAF IP Set. Blocked IPs: {updated_addresses}")
-    return {'statusCode': 200, 'body': f"Blocked IPs: {extracted_ips}"}
-```
+    for log_event in data["logEvents"]:
+
+        message = log_event["message"].strip()
+
+        print("SSH LOG:")
+        print(message)
+
+
+        # ==========================================
+        # 3. Extract attacker IP
+        # ==========================================
+
+        match = re.search(
+            r"Failed password.*from\s+(\d{1,3}(?:\.\d{1,3}){3})",
+            message
+        )
+
+        if not match:
+
+            print("No attacker IP found")
+
+            continue
+
+
+        attacker_ip = match.group(1)
+
+        print("ATTACKER IP:", attacker_ip)
+
+
+        # ==========================================
+        # 4. Validate IP
+        # ==========================================
+
+        try:
+
+            ipaddress.ip_address(attacker_ip)
+
+        except ValueError:
+
+            print("Invalid IP:", attacker_ip)
+
+            continue
+
+
+        # ==========================================
+        # 5. Create 1-minute bucket
+        # ==========================================
+
+        current_time = int(time.time())
+
+        minute_bucket = current_time // WINDOW_SECONDS
+
+        item_id = f"{attacker_ip}#{minute_bucket}"
+
+        expiration = current_time + 120
+
+
+        print("Counter ID:", item_id)
+
+
+        # ==========================================
+        # 6. Increase failure counter
+        # ==========================================
+
+        response = table.update_item(
+
+            Key={
+                "id": item_id
+            },
+
+            UpdateExpression="""
+                ADD failure_count :one
+                SET expires_at = if_not_exists(expires_at, :expiration)
+            """,
+
+            ExpressionAttributeValues={
+                ":one": 1,
+                ":expiration": expiration
+            },
+
+            ReturnValues="ALL_NEW"
+        )
+
+
+        failure_count = response["Attributes"]["failure_count"]
+
+
+        print(
+            "Failed attempts:",
+            failure_count,
+            "/",
+            THRESHOLD
+        )
+
+
+        # ==========================================
+        # 7. Check threshold
+        # ==========================================
+
+        if failure_count < THRESHOLD:
+
+            print(
+                f"{attacker_ip}: "
+                f"{failure_count}/{THRESHOLD} "
+                f"attempts - NOT BLOCKED"
+            )
+
+            continue
+
+
+        # ==========================================
+        # 8. Threshold reached
+        # ==========================================
+
+        print(
+            f"THRESHOLD REACHED: "
+            f"{attacker_ip}"
+        )
+
+
+        cidr = attacker_ip + "/32"
+
+
+        # ==========================================
+        # 9. Check existing NACL rules
+        # ==========================================
+
+        response = ec2.describe_network_acls(
+            NetworkAclIds=[NACL_ID]
+        )
+
+        used_rules = []
+
+        already_blocked = False
+
+
+        for acl in response["NetworkAcls"]:
+
+            for entry in acl["Entries"]:
+
+                used_rules.append(
+                    entry["RuleNumber"]
+                )
+
+                if (
+                    entry.get("CidrBlock") == cidr
+                    and entry.get("RuleAction") == "deny"
+                    and entry.get("Egress") is False
+                ):
+
+                    already_blocked = True
+
+                    break
+
+
+        if already_blocked:
+
+            print(
+                "IP already blocked:",
+                cidr
+            )
+
+            continue
+
+
+        # ==========================================
+        # 10. Find available rule number
+        # ==========================================
+
+        rule_number = 50
+
+        while rule_number in used_rules:
+
+            rule_number += 1
+
+
+        # ==========================================
+        # 11. Create NACL DENY rule
+        # ==========================================
+
+        try:
+
+            ec2.create_network_acl_entry(
+
+                NetworkAclId=NACL_ID,
+
+                RuleNumber=rule_number,
+
+                Protocol="-1",
+
+                RuleAction="deny",
+
+                Egress=False,
+
+                CidrBlock=cidr
+            )
+
+            print(
+                "SUCCESSFULLY BLOCKED:",
+                attacker_ip
+            )
+
+            print(
+                "NACL rule:",
+                rule_number
+            )
+
+        except Exception as e:
+
+            print(
+                "Failed to create NACL rule:"
+            )
+
+            print(str(e))
+
+
+    return {
+
+        "statusCode": 200,
+
+        "message":
+            "SSH brute-force detection processed"
+
+    }
 
 ---
 
-## 3. Define the Required Environment Parameters
+## 3. Expected Outcomes
 
-When deploying via the AWS Console in the following steps, you will need to use the following standardized configuration parameters:
+Upon completing this section, you will have:
 
-| Parameter            | Value                               |
-| -------------------- | ----------------------------------- |
-| Required Region      | `us-east-1` (US East - N. Virginia) |
-| WAF IP Set Name      | `AutoBlockedIPSetV6`                |
-| WAF Web ACL Name     | `WebsiteProtectionACL`              |
-| Log Group Name       | `aws-waf-logs-cloudfront`           |
-| SNS Topic Name       | `WAFAlertTopic`                     |
-| Lambda Function Name | `WAFAutoBlockFunction`              |
-
----
-
-## 4. Expected Outcomes
-
-After completing this section, you should have:
-
-- Successfully set up the static website project.
-- Prepared the Python source code (`lambda_function.py`) that handles the automated IP-blocking logic.
-- A clear understanding of the resource names and standard configuration parameters needed for deployment in the AWS Management Console in the following sections.
+- Prepared test scripts for SSH Brute Force attack simulations on your local workstation.
+- Created the placeholder Python source code file ("lambda_function.py") for IP extraction and automated response logic.
+- Mastered the standard resource names, database tables, and configuration parameters required for consistent deployment on the AWS Management Console in subsequent steps.

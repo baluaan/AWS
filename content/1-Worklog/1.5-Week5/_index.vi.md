@@ -1,6 +1,6 @@
 ---
 title: "Worklog - Tuần 5"
-date: 2026-08-15
+date: 2026-08-31
 weight: 5
 chapter: false
 pre: " <b> 1.5. </b> "
@@ -8,34 +8,24 @@ pre: " <b> 1.5. </b> "
 
 ### Mục tiêu tuần 5:
 
-- Nắm vững ranh giới bảo mật IAM & kiểm soát truy cập: Triển khai ranh giới quyền hạn IAM (permission boundaries) để giới hạn quyền của người dùng và thực thi các hạn chế quản trị một cách an toàn.
-
-- Triển khai mã hóa dữ liệu khi lưu trữ & ghi nhật ký kiểm toán: Sử dụng AWS Key Management Service (KMS) kết hợp với Amazon S3, AWS CloudTrail và Amazon Athena để mã hóa phía máy chủ và kiểm toán bảo mật.
-
-- Chuyển đổi lược đồ cơ sở dữ liệu & di chuyển dữ liệu: Thực hiện quy trình di chuyển cơ sở dữ liệu bằng AWS Database Migration Service (DMS) thông qua cấu hình endpoint nguồn/đích và giám sát các tác vụ nhân bản (replication).
-
-- Xây dựng hồ dữ liệu (Data Lake) & quy trình phân tích trên cloud: Thiết lập các pipeline chuyển đổi dữ liệu bằng Glue DataBrew, Glue Data Catalog, Amazon Athena để truy vấn và Amazon QuickSight để trực quan hóa.
-
-- Quản lý cơ sở dữ liệu NoSQL & tích hợp AWS CLI: Thực hiện quản lý Amazon DynamoDB thông qua AWS Management Console, AWS CloudShell và cấu hình AWS CLI.
+- Nghiên cứu Amazon CloudWatch (Dịch vụ giám sát tài nguyên và ứng dụng) và AWS CloudTrail (Dịch vụ ghi log kiểm vết hoạt động người dùng/API).
+- Hiểu các thành phần chính của CloudWatch: Metrics, Logs, Alarms, Dashboards.
+- Xây dựng hệ thống cảnh báo tự động khi tài nguyên vượt ngưỡng hiệu năng (CPU High, Memory, Disk).
+- Thực hành truy vết nhật ký thao tác trên CloudTrail để phục vụ công tác điều tra an toàn thông tin.
 
 ### Các công việc cần triển khai trong tuần này:
 
-| Thứ | Công việc                                                                                                                                                                                                      | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                          |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | --------------------------------------- |
-| 2   | - Giới hạn quyền người dùng bằng ranh giới quyền hạn IAM.<br>- Tạo chính sách hạn chế.<br>- Tạo người dùng IAM bị giới hạn.<br>- Kiểm tra giới hạn của người dùng IAM.                                         | 17/08/2026   | 17/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Mã hóa dữ liệu khi lưu trữ với AWS KMS.<br>- Tạo Key Management Service.<br>- Tạo Amazon S3. <br> - Tạo AWS CloudTrail và Amazon Athena.                                                                     | 18/08/2026   | 18/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Chuyển đổi lược đồ & di chuyển cơ sở dữ liệu.<br>- Chọn nguồn DMS.<br>- Chọn đích DMS.<br>- Giám sát các tác vụ di chuyển DMS.                                                                               | 19/08/2026   | 19/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Xây dựng hồ dữ liệu (Data Lake) với dữ liệu của bạn.<br>- Thiết lập DataBrew.<br>- Cấu hình vai trò (roles) cho AWS Glue. <br> - Tạo Data Catalog.<br> - Cài đặt Athena.<br> - Trực quan hóa với QuickSight. | 20/08/2026   | 20/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Làm việc với Amazon DynamoDB.<br>- Quản lý bằng AWS Management Console.<br>- Sử dụng AWS CloudShell. <br> - Cấu hình AWS CLI.                                                                                | 21/08/2026   | 21/08/2026      | https://cloudjourney.awsstudygroup.com/ |
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --- | --- | --- | --- |
+| 2 | - Tìm hiểu Amazon CloudWatch Metrics và Logs: Cách thu thập thông số hiệu năng của EC2, S3, Lambda.<br>- Tìm hiểu CloudWatch Agent để thu thập log hệ điều hành và Memory Metrics. | 31/08/2026 | 31/08/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 3 | - Cấu hình CloudWatch Alarm: Thiết lập ngưỡng cảnh báo khi CPU EC2 Instance vượt quá 80%.<br>- Tích hợp Amazon SNS (Simple Notification Service) để gửi Email thông báo tự động khi Alarm chuyển trạng thái ALARM. | 01/09/2026 | 01/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 4 | - Thiết lập CloudWatch Dashboard trực quan: Tạo các Widget biểu đồ hiển thị CPU Utilization, Network In/Out và Disk Read/Write cho các máy chủ. | 02/09/2026 | 02/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 5 | - Tìm hiểu AWS CloudTrail: Khái niệm Trail, Management Events, Data Events.<br>- Tạo mới một CloudTrail để ghi lại toàn bộ sự kiện API trong AWS Account và lưu trữ log tập trung tại S3 Bucket. | 03/09/2026 | 03/09/2026 | https://cloudjourney.awsstudygroup.com/ |
+| 6 | - Thực hành truy vết với CloudTrail Event History: Tìm kiếm lịch sử hành động xóa S3 Bucket hoặc Terminate EC2 Instance để xác định IAM User/IP thực hiện.<br>- Đánh giá, tổng kết kiến thức Observability trên AWS. | 04/09/2026 | 04/09/2026 | https://cloudjourney.awsstudygroup.com/ |
 
 ### Kết quả đạt được tuần 5:
 
-- Thực thi thành công ranh giới quyền hạn IAM: Đã tạo các chính sách hạn chế tùy chỉnh và giới hạn người dùng IAM, xác minh ranh giới quyền hạn thông qua kiểm thử truy cập thực tế.
-
-- Triển khai mã hóa KMS & kiểm toán CloudTrail: Đã cấu hình khóa AWS KMS để mã hóa Amazon S3 khi lưu trữ, tích hợp AWS CloudTrail để theo dõi hoạt động, và truy vấn nhật ký kiểm toán bằng Amazon Athena.
-
-- Hoàn thành di chuyển cơ sở dữ liệu toàn diện: Đã cấu hình endpoint nguồn và đích của AWS DMS, thực thi thành công các tác vụ di chuyển dữ liệu và giám sát hiệu suất di chuyển.
-
-- Xây dựng hồ dữ liệu vận hành & bảng điều khiển (Dashboard): Đã cấu hình vai trò IAM cho AWS Glue, Data Catalog và AWS Glue DataBrew cho các hoạt động ETL, chạy truy vấn trong Athena và xây dựng các bản trực quan hóa tương tác trong Amazon QuickSight.
-
-- Thành thạo Amazon DynamoDB & các thao tác AWS CLI: Đã tạo và quản lý các bảng NoSQL DynamoDB thông qua AWS Management Console, AWS CloudShell, và AWS CLI được cấu hình cục bộ.
+- Hiểu rõ vai trò quan trọng của CloudWatch trong việc duy trì tính sẵn sàng và hiệu năng của hệ thống.
+- Cấu hình thành công hệ thống cảnh báo thời gian thực: Tự động gửi Email qua SNS khi máy chủ EC2 bị cạn kiệt tài nguyên (CPU Utilization high).
+- Tự tay thiết kế Dashboard quan sát trực quan cho toàn bộ hạ tầng AWS của tài khoản thực hành.
+- Khai thác thành thạo AWS CloudTrail: Biết cách truy vết ai đã làm gì, vào thời gian nào và từ IP nào trên hạ tầng AWS Cloud.

@@ -1,6 +1,6 @@
 ---
-title: "Week 5 - Worklog"
-date: 2026-08-15
+title: "Worklog - Week 5"
+date: 2026-08-31
 weight: 5
 chapter: false
 pre: " <b> 1.5. </b> "
@@ -8,34 +8,24 @@ pre: " <b> 1.5. </b> "
 
 ### Week 5 Objectives:
 
-- Master IAM Security Boundaries & Access Control: Implement IAM permission boundaries to limit user permissions and enforce administrative restrictions safely.
+- Study Amazon CloudWatch (Resource & Application Monitoring) and AWS CloudTrail (API Auditing & Event Logging).
+- Understand core CloudWatch building blocks: Metrics, Logs, Alarms, and Dashboards.
+- Build an automated monitoring & alert pipeline for metric threshold breaches (High CPU, Memory, Disk).
+- Practice forensic investigation and API action auditing using CloudTrail event histories.
 
-- Implement Data Encryption at Rest & Audit Logging: Utilize AWS Key Management Service (KMS) with Amazon S3, AWS CloudTrail, and Amazon Athena for server-side encryption and security auditing.
+### Tasks to be implemented this week:
 
-- Database Schema Conversion & Data Migration: Execute database migration workflows using AWS Database Migration Service (DMS) by configuring source/target endpoints and monitoring replication tasks.
+| Day | Task Description | Start Date | End Date | Resource / Documentation |
+| --- | --- | --- | --- | --- |
+| Mon | - Study Amazon CloudWatch Metrics and Logs: Collecting performance telemetry from EC2, S3, and Lambda.<br>- Learn CloudWatch Agent installation for OS-level metrics (RAM/Disk usage) and custom logs. | 08/31/2026 | 08/31/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Tue | - Configure CloudWatch Alarms: Define warning thresholds when EC2 CPU utilization exceeds 80%.<br>- Integrate Amazon SNS (Simple Notification Service) to dispatch automated email alerts on ALARM trigger. | 09/01/2026 | 09/01/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Wed | - Build customized CloudWatch Dashboards: Add visualization widgets monitoring EC2 CPU, Network I/O, and Storage performance. | 09/02/2026 | 09/02/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Thu | - Study AWS CloudTrail: Understanding Management Events, Data Events, and Trail configurations.<br>- Create a multi-region CloudTrail logging API activity centrally into an Amazon S3 bucket. | 09/03/2026 | 09/03/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Fri | - Forensic auditing via CloudTrail Event History: Search and identify who deleted resources (e.g., S3 Buckets or terminated EC2 Instances).<br>- Review week 5 progress on AWS Observability. | 09/04/2026 | 09/04/2026 | https://cloudjourney.awsstudygroup.com/ |
 
-- Build Cloud Data Lakes & Analytics Pipelines: Set up data transformation pipelines using AWS Glue DataBrew, Glue Data Catalog, Amazon Athena for queries, and Amazon QuickSight for visualization.
+### Key Achievements in Week 5:
 
-- NoSQL Database Management & AWS CLI Integration: Perform Amazon DynamoDB management via AWS Management Console, AWS CloudShell, and AWS CLI configurations.
-
-### Tasks to be carried out this week:
-
-| Day | Task                                                                                                                                                                                            | Start Date | Completion Date | Reference Material                      |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------- | --------------------------------------- |
-| 2   | - Limitation of user rights with IAM permission boundary.<br>- Create Restriction Policy.<br>- Create IAM Limited User.<br>- Test IAM User Limits.                                              | 17/08/2026 | 17/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Encrypt at rest with AWS KMS.<br>- Create Key Management Service.<br>- Create Amazon S3. <br> - Create AWS CloudTrail and Amazon Athena.                                                      | 18/08/2026 | 18/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Database Schema Conversion & Migration.<br>- Select your DMS source.<br>- Select your DMS Target.<br>- Monitoring DMS Migrations.                                                             | 19/08/2026 | 19/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Building a Datalake with your Data.<br>- Setting up DataBrew.<br>- Configuring roles for AWS Glue. <br> - Creating a Data Catalog.<br> - Install Athena.<br> - Visualization with QuickSight. | 20/08/2026 | 20/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Work with Amazon DynamoDB.<br>- Manage using AWS Management Console.<br>- Use AWS CloudShell. <br> - Configure AWS CLI.                                                                       | 21/08/2026 | 21/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-
-### Week 5 Achievements:
-
-- Successfully Enforced IAM Permission Boundaries: Created custom restriction policies and limited IAM users, verifying permission boundaries through hands-on access testing.
-
-- Implemented KMS Encryption & CloudTrail Auditing: Configured AWS KMS keys for Amazon S3 encryption at rest, integrated AWS CloudTrail for activity tracking, and queried audit logs using Amazon Athena.
-
-- Completed End-to-End Database Migration: Configured AWS DMS source and target endpoints, successfully executed data migration tasks, and monitored migration performance.
-
-- Constructed Operational Data Lake & Dashboards: Configured AWS Glue IAM roles, Data Catalog, and AWS Glue DataBrew for ETL operations, running queries in Athena and building interactive visualizations in Amazon QuickSight.
-
-- Mastered Amazon DynamoDB & AWS CLI Operations: Created and managed NoSQL DynamoDB tables through the AWS Management Console, AWS CloudShell, and locally configured AWS CLI.
+- Understood the core principles of Cloud Observability, monitoring operational health via Amazon CloudWatch.
+- Successfully built an automated alarm system sending immediate email alerts via SNS upon server overload.
+- Custom-designed centralized CloudWatch Dashboards for operational visibility across compute instances.
+- Mastered audit logging with AWS CloudTrail to track account activity, user attribution, and security compliance.

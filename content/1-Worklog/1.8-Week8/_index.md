@@ -1,6 +1,6 @@
 ---
-title: "Week 8 - Worklog"
-date: 2026-09-05
+title: "Worklog - Week 8"
+date: 2026-09-21
 weight: 8
 chapter: false
 pre: " <b> 1.8. </b> "
@@ -8,30 +8,24 @@ pre: " <b> 1.8. </b> "
 
 ### Week 8 Objectives:
 
-- Load Testing & Attack Simulation: Utilize stress testing tools (Artillery, Apache JMeter) to simulate HTTP Flood / DDoS attack scenarios targeting the web application.
+- Consolidate and integrate all AWS Cloud concepts acquired across the 7-week internship period.
+- Review and evaluate lab architectures against the 5 pillars of the AWS Well-Architected Framework.
+- Perform security audits and cost optimization across all provisioned cloud assets.
+- Finalize the comprehensive internship report and execute complete resource teardown on AWS Console to prevent unexpected charges.
 
-- End-to-End Automation Verification: Evaluate the entire automated incident response lifecycle: abnormal traffic spike -> WAF logging -> CloudWatch Alarm trigger -> Lambda IP extraction -> WAF Blocked IP Set update -> Amazon SNS notification dispatch.
+### Tasks to be implemented this week:
 
-- Performance Measurement & Optimization: Measure latency across the automated mitigation workflow, fine-tune Metric Filter patterns, Alarm evaluation thresholds, and IP unblock mechanisms (TTL) to minimize false positives.
+| Day | Task Description | Start Date | End Date | Resource / Documentation |
+| --- | --- | --- | --- | --- |
+| Mon | - Study AWS Well-Architected Framework: 5 core pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization).<br>- Evaluate hands-on lab architecture designs against Well-Architected guidelines. | 09/21/2026 | 09/21/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Tue | - Security Audit: Utilize AWS Trusted Advisor / IAM Access Analyzer to inspect overly permissive Security Groups, Root MFA, and IAM policies. | 09/22/2026 | 09/22/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Wed | - Cost Optimization: Audit AWS Cost Explorer to identify idle assets (unattached EBS volumes, unassociated Elastic IPs, unused NAT Gateways). | 09/23/2026 | 09/23/2026 | AWS Cost Explorer |
+| Thu | - Consolidate all 8-week worklogs, architecture diagrams, Lambda/Dockerfile scripts, and practical lab results.<br>- Package the final AWS Cloud Internship Summary Report. | 09/24/2026 | 09/24/2026 | Personal Documentation |
+| Fri | - Execute full resource teardown: Terminate EC2s, ECS Clusters, ECR repositories, ALBs, NAT Gateways, Custom VPCs, CloudWatch Alarms, and S3 Buckets.<br>- Present final internship achievements to mentor. | 09/25/2026 | 09/25/2026 | AWS Management Console |
 
-- Project Finalization & Handover: Aggregate empirical data, finalize technical documentation, record benchmark metrics, and deliver system handover reports.
+### Key Achievements in Week 8:
 
-### Tasks to be carried out this week:
-
-| Day | Task                                                                                                                                                                                                                           | Start Date | Completion Date | Reference Material                      |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------------- | --------------------------------------- |
-| 2   | - Prepare load testing environment & simulate attack vectors.<br>- Configure HTTP Flood simulation scenarios using Artillery/JMeter.<br>- Generate high-rate traffic exceeding defined thresholds from test IP addresses.      | 07/09/2026 | 07/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Conduct End-to-End automated response testing.<br>- Monitor CloudWatch Alarm state transition latency.<br>- Verify accurate IP extraction and dynamic entry addition into WAF IP Set.<br>- Confirm SNS email alert delivery. | 08/09/2026 | 08/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Performance evaluation & fine-tuning.<br>- Measure end-to-end response time across the mitigation pipeline.<br>- Adjust evaluation periods and threshold limits on CloudWatch Alarms to optimize detection sensitivity.      | 09/09/2026 | 09/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Verify automated IP expiration logic (TTL).<br>- Validate automated removal of blocked IP addresses from WAF IP Set after specified timeouts.<br>- Test traffic restoration for legitimate users post-mitigation.            | 10/09/2026 | 10/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Project finalization & report delivery.<br>- Compile load test results, performance metrics, and system benchmarks.<br>- Finalize end-to-end architecture diagrams, technical documentation, and operation manuals.          | 11/09/2026 | 11/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-
-### Week 8 Achievements:
-
-- Successfully Simulated Real-World Attack Scenarios: Executed comprehensive HTTP Flood load tests, generating sufficient traffic to trigger automated edge security mechanisms.
-
-- Verified End-to-End Automation Pipeline: Validated 100% operational accuracy of the automated mitigation flow from threat detection and IP blocking to instant SNS alerts.
-
-- Optimized Performance & Reduced False Positives: Benchmark response times across the pipeline, fine-tuning detection parameters to balance system sensitivity and operational reliability.
-
-- Completed Project Acceptance & Handover: Delivered technical reports, architecture diagrams, and system operations guides for cloud-native automated incident response on AWS.
+- Mastered system architecture evaluation methodologies based on the AWS Well-Architected Framework.
+- Identified and remediated security misconfigurations and unnecessary cloud expenditure on the practice account.
+- Successfully finalized the end-of-internship comprehensive documentation covering Core Services, Networking, Serverless, and Containers.
+- Completely decommissioned 100% of temporary AWS resources, leaving the account clean with zero lingering costs.

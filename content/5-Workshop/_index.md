@@ -1,31 +1,30 @@
 ---
 title: "Workshop"
-date: 2026-08-24
+date: 2026-09-11
 weight: 5
 chapter: false
 pre: " <b> 5. </b> "
 ---
 
-# Deploy Static Website Protection & Automated IP Blocking with AWS WAF & Lambda
+# Deploying Automated SSH Attack Monitoring, Detection, and Mitigation on AWS
 
 #### Overview
 
-In this workshop, we will build and deploy an **Automated Threat Protection** solution for a static website using a Cloud-Native Serverless architecture on AWS.
+In this workshop, we will build and deploy an **AWS SSH Automated Threat Protection** solution for EC2 Linux servers based on a Cloud-Native Serverless architecture on AWS infrastructure.
 
-The solution leverages core AWS services including **Amazon S3**, **Amazon CloudFront**, **AWS WAF**, **Amazon CloudWatch**, **Amazon SNS**, **AWS Lambda**, and **AWS IAM** to establish real-time traffic monitoring, detect anomalous access behavior (such as HTTP Flood / Rate-limit breach), and automatically update the blacklist (WAF IP Set V6) at the Edge location without requiring manual intervention from system administrators.
+The solution utilizes core AWS services including **Amazon EC2 (Ubuntu)**, **Amazon CloudWatch Logs**, **Subscription Filters**, **AWS Lambda**, **Amazon DynamoDB**, **Amazon SNS**, **Network ACL (NACL)**, and **AWS IAM** to establish a real-time monitoring mechanism for SSH login traffic. It automatically detects abnormal access patterns (such as SSH Brute-Force attacks), sends email notifications via SNS, and programmatically applies `DENY` rules against malicious source IP addresses (`/32`) at the Subnet network boundary layer without requiring manual administrator intervention.
 
-Throughout this workshop, you will practice the complete end-to-end deployment workflow: from preparing project foundations, setting up S3 storage infrastructure & CloudFront CDN, configuring WAF Web ACL security rule sets, setting up SNS notification channels, writing automated execution logic with AWS Lambda (Python 3.12), to configuring CloudWatch Alarms, executing real-world attack simulation testing, and safely cleaning up resources post-testing.
+Throughout this workshop, you will complete an end-to-end deployment workflow: from setting up project prerequisites, configuring the EC2 Ubuntu server and streaming authentication log files (`/var/log/auth.log`) to CloudWatch Logs, provisioning a DynamoDB counter table with a 1-minute tracking window, developing Lambda automation functions (Python 3.12) to update Subnet NACLs and trigger SNS email alerts, to executing real-world attack simulation tests and safely cleaning up AWS resources post-testing.
 
-#### Contents
+#### Table of Contents
 
 1. [Workshop Overview](5.1-Workshop-overview/)
 2. [Prerequisites](5.2-Prerequisite/)
-3. [Project Preparation](5.3-Project-foundation/)
-4. [Host Static Website on Amazon S3](5.4-Host-Static-Website-S3/)
-5. [Distribute Content via Amazon CloudFront](5.5-Distribute-via-CloudFront/)
-6. [Configure AWS WAF & Logging](5.6-Configure-AWS-WAF-Logging/)
-7. [Initialize Amazon SNS Topic](5.7-Create-SNS-Topic/)
-8. [Create IAM Role & AWS Lambda Function](5.8-Create-IAM-Role-Lambda/)
-9. [Configure CloudWatch Alarm](5.9-Configure-CloudWatch-Alarm/)
-10. [System Testing](5.10-Testing/)
-11. [Resource Cleanup](5.11-Cleanup/)
+3. [Project Foundation](5.3-Project-foundation/)
+4. [Launch EC2 Ubuntu Instance & Configure SSH](5.4-Launch-EC2-Ubuntu/)
+5. [Configure CloudWatch Agent & Collect Log `/var/log/auth.log`](5.5-Configure-CloudWatch-Agent/)
+6. [Provision Amazon DynamoDB Table & Amazon SNS Topic](5.6-Create-DynamoDB-SNS/)
+7. [Create IAM Roles & Develop AWS Lambda Function](5.7-Create-Lambda/)
+8. [Configure CloudWatch Subscription Filter](5.8-Configure-Subscription-Filter/)
+9. [System Testing & Automated Subnet NACL IP Blocking](5.9-Testing-Automation/)
+10. [Resource Cleanup](5.10-Cleanup/)

@@ -1,6 +1,6 @@
 ---
-title: "Week 7 - Worklog"
-date: 2026-08-29
+title: "Worklog - Week 7"
+date: 2026-09-14
 weight: 7
 chapter: false
 pre: " <b> 1.7. </b> "
@@ -8,30 +8,24 @@ pre: " <b> 1.7. </b> "
 
 ### Week 7 Objectives:
 
-- Incident Detection & Alarm Triggering: Configure Metric Filters in CloudWatch Logs to parse WAF access logs and set up CloudWatch Alarms to detect high-frequency IP requests exceeding set thresholds.
+- Introduction to Application Containerization and fundamental Docker concepts (Dockerfile, Images, Containers).
+- Explore AWS Container Orchestration service - Amazon Elastic Container Service (AWS ECS).
+- Compare ECS launch types: EC2 Launch Type vs. AWS Fargate (Serverless compute engine for containers).
+- Hands-on deployment of a containerized application onto AWS ECS Fargate.
 
-- Automated Blocking Logic Development: Write and deploy an AWS Lambda function in Python (`boto3`) to extract offending IP addresses and dynamically update the WAF Blocked IP Set via API calls (`GetIPSet` & `UpdateIPSet`).
+### Tasks to be implemented this week:
 
-- Real-Time Notification Integration: Create an Amazon SNS Topic and subscribe notification endpoints (Email/Webhook) to instantly alert administrators upon threat mitigation.
+| Day | Task Description | Start Date | End Date | Resource / Documentation |
+| --- | --- | --- | --- | --- |
+| Mon | - Study Docker fundamentals: Containerization vs. Virtualization, Docker Engine architecture.<br>- Write a basic Dockerfile, build a container image (`docker build`), and execute container locally (`docker run`). | 09/14/2026 | 09/14/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Tue | - Study Amazon Elastic Container Registry (ECR): Private Docker image repositories on AWS.<br>- Create ECR Repository, authenticate Docker CLI with ECR, tag images, and push container images to ECR. | 09/15/2026 | 09/15/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Wed | - Study AWS ECS Architecture: ECS Clusters, Task Definitions, Tasks, and Services.<br>- Differentiate between ECS EC2 Launch Type vs Serverless AWS Fargate Launch Type. | 09/16/2026 | 09/16/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Thu | - Provision an AWS ECS Cluster.<br>- Draft an ECS Task Definition linking the ECR container image, setting vCPU/Memory specifications and port mappings.<br>- Deploy an ECS Service running Tasks on AWS Fargate. | 09/17/2026 | 09/17/2026 | https://cloudjourney.awsstudygroup.com/ |
+| Fri | - Integrate the ECS Service with an Application Load Balancer (ALB) for dynamic request routing.<br>- Verify web access via ALB DNS, audit container status, and teardown ECS/ECR test assets. | 09/18/2026 | 09/18/2026 | https://cloudjourney.awsstudygroup.com/ |
 
-- Security Policy Hardening: Apply the Principle of Least Privilege to configure fine-grained IAM Roles and Inline Policies for Lambda execution.
+### Key Achievements in Week 7:
 
-### Tasks to be carried out this week:
-
-| Day | Task                                                                                                                                                                                                         | Start Date | Completion Date | Reference Material                      |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------------- | --------------------------------------- |
-| 2   | - Configure metric extraction & alarms.<br>- Create Metric Filters on CloudWatch Log Groups for WAF logs.<br>- Provision CloudWatch Alarms to trigger on single-IP request threshold violations.             | 31/08/2026 | 31/08/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 3   | - Develop automated response Lambda logic.<br>- Write Python code using `boto3` SDK to handle `GetIPSet` and `UpdateIPSet`.<br>- Implement IP parsing and CIDR format transformation.                        | 01/09/2026 | 01/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 4   | - Integrate automation workflow.<br>- Configure CloudWatch Alarm state changes to invoke the Lambda function automatically.<br>- Define time-to-live (TTL) logic for temporary IP block handling.            | 02/09/2026 | 02/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 5   | - Set up SNS notification system & IAM hardening.<br>- Create Amazon SNS Topic and configure Email/Webhook subscriptions.<br>- Define IAM Role and strict policy statements for Lambda execution privileges. | 03/09/2026 | 03/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-| 6   | - Functionality validation & Week 7 review.<br>- Test manual invocation of Lambda function with sample alarm payload.<br>- Verify dynamic IP addition in WAF IP Set and refine code execution paths.         | 04/09/2026 | 04/09/2026      | https://cloudjourney.awsstudygroup.com/ |
-
-### Week 7 Achievements:
-
-- Successfully Configured Detection Alarms: Built CloudWatch Metric Filters on WAF access logs and established threshold-based Alarms capable of identifying malicious traffic spikes.
-
-- Deployed Lambda Response Engine: Wrote and deployed Python-based AWS Lambda logic using `boto3`, enabling seamless parsing of attacker IPs and automated WAF IP Set modifications.
-
-- Integrated Instant Incident Notifications: Established Amazon SNS alert pipelines to dispatch real-time warning messages to security administrators whenever an IP is blocked.
-
-- Applied Strict IAM Governance: Hardened access control for all automated components by enforcing Least Privilege execution policies on Lambda functions.
+- Understood core containerization principles and mastered essential Docker CLI commands.
+- Successfully published container images securely using Amazon Elastic Container Registry (ECR).
+- Mastered Amazon ECS core architecture (Task Definitions, Services, and Serverless Clusters).
+- Successfully deployed a scalable containerized web application on AWS ECS Fargate integrated with an Application Load Balancer (ALB).

@@ -1,6 +1,6 @@
 ---
 title: "Prerequisites"
-date: 2026-08-24
+date: 2026-09-11
 weight: 2
 chapter: false
 pre: " <b> 5.2. </b> "
@@ -8,73 +8,80 @@ pre: " <b> 5.2. </b> "
 
 ### Objective
 
-Ensure you have full access to the AWS Management Console, a ready local testing environment, and the necessary source code resources prepared before deploying the automated protection system.
+Ensure that the practitioner has full administrative access to the AWS Management Console, prepares the target test environment (Amazon EC2 Ubuntu), configures SSH Brute Force attack simulation tools, and prepares the required AWS Lambda source code files before deploying the automated defense system.
 
 ---
 
-## 1. Tools and Resources to Prepare
+## 1. Required Tools and Resources
 
-This workshop is carried out mainly through the **AWS Management Console (Web UI)**, combined with a local workstation environment for hands-on testing. You will need to prepare the following:
+This automated incident response workshop primarily operates on the **AWS Management Console (Web UI)** in combination with a local workstation and an EC2 instance for practical testing. You need to prepare the following components:
 
-- **AWS Account:** Must have permissions to create and manage AWS WAF, Lambda, S3, CloudFront, CloudWatch, SNS, and IAM (`AdministratorAccess` is recommended).
+- **AWS Account:** Must have permissions to create and manage Amazon EC2, CloudWatch Logs, AWS Lambda, Amazon DynamoDB, Amazon SNS, VPC (Network ACL), and IAM services (the "AdministratorAccess" policy is recommended).
+- **Target Server (Amazon EC2):** 01 Instance running **Ubuntu Server 22.04 LTS / 24.04 LTS** acting as the target SSH server under attack.
 - **Web Browser:** The latest version of Google Chrome, Microsoft Edge, or Mozilla Firefox.
-- **CLI Testing Tool (Terminal / PowerShell):** Used to run commands that simulate traffic/attacks (HTTP Flood).
-  - On Windows: **PowerShell** (comes with `Invoke-WebRequest`).
-  - On macOS/Linux: **Terminal** (comes with `curl`).
-- **Code Editor:** Visual Studio Code (or Notepad++) for viewing/editing the Lambda source code (Python 3.12) and the static website interface (`index.html`).
-- **Email Address (Gmail):** Used to subscribe to incident alert emails from the Amazon SNS Topic.
+- **SSH Attack Simulation Tools (Terminal / PowerShell / Hydra):** Used to perform repeated invalid SSH login attempts.
+  - For Windows: **PowerShell** / **PuTTY** / **MobaXterm** or **Hydra** (for automated testing).
+  - For macOS/Linux: **Terminal** (using the "ssh" command or "hydra" tool).
+- **Code Editor:** Visual Studio Code or Notepad++ to review/edit the Lambda script ("lambda_function.py") for processing SSH logs and updating DynamoDB/NACL.
+- **Email Address (Gmail):** Used to subscribe to and receive incident notification emails from the Amazon SNS Topic.
 
 ---
 
 ## 2. Detailed Preparation Steps
 
-### Step 1: Sign in to the AWS Console and Verify the Region
+### Step 1: Log in to AWS Console and Select Region
 
-1. Sign in to the [AWS Management Console](https://aws.amazon.com/console/).
-2. Make sure the selected working Region is **US East (N. Virginia) — us-east-1**, shown in the top-right corner of the Console.
+1. Log in to the [AWS Management Console](https://aws.amazon.com/console/).
+2. Select the deployment region (e.g., **Asia Pacific (Singapore) — ap-southeast-1** or **US East (N. Virginia) — us-east-1**) from the top-right corner of the Console header.
 
-> ⚠️ **IMPORTANT NOTE:** AWS WAF for Amazon CloudFront (Global) and its dependent resources must be created and managed in the **us-east-1 (N. Virginia)** Region.
+> ⚠️ **IMPORTANT NOTE:** All resources including EC2 Instance, CloudWatch Logs Group, Lambda Function, DynamoDB Table, SNS Topic, and Network ACL must be deployed in the **same Region and within the same VPC/Subnet** to ensure seamless integration and accurate reaction.
 
-**Checkpoint:** The Region name in the toolbar correctly displays **US East (N. Virginia) us-east-1**.
-
----
-
-### Step 2: Verify Local Command-Line Tools
-
-Open Terminal (macOS/Linux) or PowerShell (Windows) and check that the HTTP request testing command is available:
-
-**On Windows (PowerShell):**
-
-```powershell
-Get-Command Invoke-WebRequest
-```
-
-**On macOS/Linux (Terminal):**
-
-```bash
-curl --version
-```
-
-**Checkpoint:** The commands return valid tool information and are ready to send HTTP/HTTPS requests.
+**Checkpoint:** The Region name in the navigation bar correctly displays the target region (e.g., **Asia Pacific (Singapore) ap-southeast-1**).
 
 ---
 
-### Step 3: Prepare the Application and Lambda Source Files
+### Step 2: Prepare Ubuntu EC2 Server and Configure CloudWatch Agent
 
-Download or create a local project folder containing the following files:
+1. Launch an Ubuntu EC2 Instance (e.g., "t2.micro" or "t3.micro").
+2. Attach an **IAM Role** with the "CloudWatchAgentServerPolicy" managed policy to allow pushing system logs to CloudWatch.
+3. Install and configure the **CloudWatch Agent** on the EC2 instance to automatically monitor and push the system log file "/var/log/auth.log" to CloudWatch Logs Group.
 
-- A static website interface file (`index.html`) to be hosted on Amazon S3.
-- A Python source file (`lambda_function.py`) that automates extracting offending IPs and calling the AWS WAF API.
+Verify SSH log recording on the EC2 instance using the command: "sudo tail -f /var/log/auth.log"
 
-**Checkpoint:** The website source code and the Lambda script are ready on your computer to be uploaded to AWS in the next steps.
+**Checkpoint:** The log file "/var/log/auth.log" actively records all successful and failed SSH authentication events ("Failed password").
+
+---
+
+### Step 3: Verify SSH Simulation Tools on Local Workstation
+
+Open Terminal (macOS/Linux) or PowerShell (Windows) to verify connectivity and test SSH authentication requests to the EC2 instance:
+
+Test basic SSH command execution using: "ssh invalid_user@<EC2_PUBLIC_IP>"
+
+Or run automated Brute Force testing via Hydra using: "hydra -l admin -P passwords.txt <EC2_PUBLIC_IP> ssh -t 4"
+
+**Checkpoint:** The SSH connection is rejected due to invalid credentials, and the EC2 server logs a "Failed password for ..." entry into "/var/log/auth.log".
+
+---
+
+### Step 4: Prepare the Incident Response Script (AWS Lambda)
+
+Prepare the Python source code file ("lambda_function.py") on your local machine with the following core functionalities:
+- Decompress and decode incoming log payloads sent by **CloudWatch Subscription Filter**.
+- Extract the source IP address ("clientIp") using **Regex**.
+- Record and increment the failure counter within a 1-minute window in **Amazon DynamoDB**.
+- Evaluate the threshold (≥ 5 failures/1 min): trigger alert emails via **Amazon SNS** and automatically attach a "DENY" CIDR "/32" rule to the target **Network ACL**.
+
+**Checkpoint:** The Python Lambda script is ready for deployment and linking with CloudWatch, DynamoDB, and Network ACL.
 
 ---
 
 ## 3. Expected Outcomes
 
-After completing this chapter, you should have:
+Upon completing this chapter, you will have achieved the following prerequisites:
 
-- Successfully signed in to the AWS Management Console in the **us-east-1 (N. Virginia)** Region.
-- A local workstation environment with PowerShell/Terminal ready for attack simulation testing.
-- An email address ready to receive alert notifications from SNS.
-- The static website source code and the Python Lambda function ready for deployment.
+- Successfully logged into the AWS Management Console in the selected Region.
+- Deployed and verified an Ubuntu EC2 instance integrated with CloudWatch Agent to record "/var/log/auth.log".
+- Set up a local workstation environment ready to execute SSH Brute Force attack simulations.
+- Prepared an active Email address subscribed to Amazon SNS alerts.
+- Finalized the Python Lambda source code, ready to be deployed and configured with DynamoDB and Network ACL.

@@ -12,22 +12,24 @@ This section documents the entire **8-week** internship journey, structured foll
 
 During the **first 5 weeks**, the focus was on in-depth research into AWS network architecture and security, covering critical services such as IAM, VPC, Transit Gateway, Hybrid DNS, Site-to-Site VPN, S3 Cross-Region Replication (CRR), AWS Security Hub, data governance, and process automation using AWS Lambda. This period established the foundational infrastructure knowledge essential for the core internship project.
 
-From **Week 6 to Week 8**, the main internship project was implemented: **"Automated Threat Protection with AWS WAF & Lambda"**. The project was successfully designed, built, and accepted by combining cloud-native services including **Amazon CloudFront, AWS WAF, Amazon CloudWatch Logs & Alarms, AWS Lambda (Python/boto3)**, and **Amazon SNS** to construct an automated threat detection and incident response pipeline.
+In **Weeks 6 and 7**, I expanded infrastructure capabilities into high-availability architecture and application containerization. I successfully implemented Application Load Balancers (ALB) paired with Auto Scaling Groups (ASG) for seamless fault tolerance, while mastering Docker fundamentals (Dockerfiles, Amazon ECR) and serverless container orchestration using Amazon ECS Fargate.
 
-The detailed task breakdown for each week is presented below:
+In **Week 8**, I successfully completed and validated the Capstone Project: **"Automated Monitoring, Detection, and Incident Response System for SSH Brute-Force Attacks on EC2 Instances"**. Built by integrating cloud-native services including **Amazon EC2, Amazon CloudWatch Logs & Metric Filters, CloudWatch Alarms, AWS Lambda (Python/boto3), AWS DynamoDB**, and **Amazon SNS**, the solution automatically analyzes system authentication logs, detects malicious SSH login patterns, instantly triggers a Lambda function to isolate offending IP addresses via Security Groups/NACLs, and dispatches real-time security alerts to system administrators.
 
-**Week 1:** [AWS Overview: Account Setup, IAM Security, Cost Management & Budgeting](1.1-week1/)
+The detailed log for each week is structured as follows:
 
-**Week 2:** [AWS Networking & Security: VPC, Hybrid DNS, Active Directory & Site-to-Site VPN](1.2-week2/)
+**Week 1:** [AWS Overview: Account Setup, IAM Security & AWS Budgets Management](1.1-week1/)
 
-**Week 3:** [AWS Advanced Networking & Storage: Transit Gateway, Backup, File Gateway & VM Migration](1.3-week3/)
+**Week 2:** [AWS Core Services: Deep Dive into IAM, Amazon S3 Storage & EC2 Compute](1.2-week2/)
 
-**Week 4:** [AWS Advanced Storage & Security: FSx, S3 CRR, Security Hub & Lambda Automation](1.4-week4/)
+**Week 3:** [AWS Networking: Custom VPC, Subnets, Gateways & Dual-Layer Security (SG/NACLs)](1.3-week3/)
 
-**Week 5:** [AWS Security Boundaries, Data Governance & Database Migration](1.5-week5/)
+**Week 4:** [Serverless Architecture: AWS Lambda, Boto3 SDK & Automated EC2 Scheduling](1.4-week4/)
 
-**Week 6:** [Project Planning, System Architecture Design, CloudFront, WAF & Logging Setup](1.6-week6/)
+**Week 5:** [AWS Observability: CloudWatch Monitoring, SNS Alerts & CloudTrail Auditing](1.5-week5/)
 
-**Week 7:** [Incident Detection, Lambda Automation & SNS Notification](1.7-week7/)
+**Week 6:** [High Availability: Elastic Load Balancing (ALB) & Auto Scaling Groups (ASG)](1.6-week6/)
 
-**Week 8:** [End-to-End Testing, Attack Simulation & Project Finalization](1.8-week8/)
+**Week 7:** [Containerization: Docker Basics, Amazon ECR & AWS ECS Fargate Deployment](1.7-week7/)
+
+**Week 8:** [Capstone Project: Automated SSH Attack Monitoring, Isolation & Response on EC2](1.8-week8/)
