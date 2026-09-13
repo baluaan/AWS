@@ -66,16 +66,18 @@ The solution follows a Cloud-Native Serverless Security Architecture on AWS.
 
 System components and execution workflow:
 
-**Attacker → EC2 Ubuntu → CloudWatch Logs → Subscription Filter (`Failed password`) → AWS Lambda ↔ DynamoDB (Attack Counter) → Amazon SNS (Email Alert) & Network ACL (DENY /32 Rule)**
+- **Attacker → EC2 Ubuntu → CloudWatch Logs → Subscription Filter (`Failed password`) → AWS Lambda ↔ DynamoDB (Attack Counter) →  Network ACL (DENY /32 Rule)**
+- **Attacker → EC2 Ubuntu → CloudWatch Logs → Metric Filter (`Failed password`)→ Amazon SNS (Email Alert)**
 
-![System Architecture](/images/proposal/system_architecture1.png)
+![System Architecture](/images/2/1.jpg)
 
 ## AWS Services Utilized
 
 - **Amazon EC2:** Ubuntu Linux server running the SSH daemon.
 - **Amazon CloudWatch Logs:** Log ingestion and management service.
 - **CloudWatch Subscription Filter:** Pattern-matching event filter (`Failed password`).
-- **AWS Lambda:** Automated logic execution engine (Python 3.12 runtime).
+- **CloudWatch Metric Filter:** Pattern-matching event filter (`Failed password`).
+- **AWS Lambda:** Automated logic execution engine.
 - **Amazon DynamoDB:** NoSQL database tracking IP failure metrics.
 - **Amazon SNS:** Notification service delivering email security alerts.
 - **Network ACL (NACL):** Stateless Subnet firewall.
@@ -109,22 +111,19 @@ System components and execution workflow:
 
 ## Detailed Execution Sequence
 
-![System Workflow](/images/proposal/system_workflow.png)
 
-The automated detection, alerting, and mitigation lifecycle consists of 12 steps:
+The automated detection, alerting, and mitigation lifecycle consists of 10 steps:
 
-1. An Attacker executes unauthorized SSH login attempts against the Amazon EC2 Ubuntu instance.
-2. The SSH Server logs failed authentication events to `/var/log/auth.log`.
-3. The CloudWatch Agent automatically streams new log entries to CloudWatch Logs Group.
-4. Subscription Filter matches the `Failed password` pattern and routes the event payload to AWS Lambda.
-5. AWS Lambda decompresses the payload and parses the source IP (`clientIp`) using Regex.
-6. Lambda queries and increments the failed attempt count for the IP in Amazon DynamoDB.
-7. Lambda evaluates total failures within the last 1-minute window.
-8. If the count is < 5, execution finishes and monitoring continues.
-9. If the count reaches >= 5, Lambda triggers Amazon SNS email notification and initiates remediation.
-10. Lambda checks existing rules on the Subnet Network ACL.
-11. If the IP is not listed, Lambda inserts a high-priority `DENY` entry (`/32` CIDR).
-12. Network ACL immediately drops all inbound SSH traffic from the offending IP at the Subnet boundary.
+1. An attacker executes invalid SSH login attempts into the **Amazon EC2 Ubuntu** server.
+2. The SSH Server on the EC2 instance records failed login events into the system log file `/var/log/auth.log`.
+3. The **CloudWatch Agent** installed on the EC2 instance automatically pushes new log data to the **CloudWatch Logs Group**.
+4. The **Subscription Filter** scans the logs, detects event strings matching the pattern configuration `Failed password`, and forwards the event payload to **AWS Lambda**.
+5. **AWS Lambda** decompresses the data and uses regular expressions (Regex) to accurately extract the source IP address (`clientIp`).
+6. Lambda queries and increments the failed login counter for that IP address in an **Amazon DynamoDB** table.
+7. Lambda checks the total number of failures within the most recent 1-minute window.
+8. If the failure count is less than 5, Lambda terminates the process, and the system continues monitoring.
+9. If the failure count reaches **5 times/1 minute** or more, Lambda triggers an automated response workflow via **Network ACL** to block the IP.
+10. The **Metric filter** is checked; if it exceeds the threshold of **5 times/1 minute**, it triggers the **SNS topic** to send an email alert.
 
 ---
 
@@ -134,12 +133,11 @@ The automated detection, alerting, and mitigation lifecycle consists of 12 steps
 
 The project is executed across 6 core engineering steps:
 
-1. **EC2 Provisioning & SSH Setup:** Launch Ubuntu 22.04 LTS instance with Security Group allowing SSH port 22.
-2. **CloudWatch Agent Setup:** Configure agent to collect `/var/log/auth.log` into CloudWatch Log Group.
-3. **DynamoDB Table & SNS Topic Creation:** Provision `SSHAttackCounter` table (Partition Key: `AttackerIP`) and configure SNS email subscriber.
-4. **IAM Role Configuration:** Assign Lambda permissions for CloudWatch Logs, DynamoDB (`GetItem`, `PutItem`, `UpdateItem`), SNS (`Publish`), and EC2 NACL (`DescribeNetworkAcls`, `CreateNetworkAclEntry`).
-5. **Lambda Development & Filter Binding:** Deploy Python 3.12 function logic and link Subscription Filter to Log Group.
-6. **Attack Simulation & Testing:** Execute SSH brute-force scripts (>= 5 failures/min) to verify SNS email dispatch and NACL rule enforcement.
+1. **EC2 Infrastructure Initialization & SSH Configuration:** Create an Ubuntu EC2 server, configure a Security Group to open port 22.
+2. **CloudWatch Agent & Log Group Configuration:** Install the CloudWatch Agent on EC2 to collect `/var/log/auth.log` logs into a CloudWatch Log Group.
+3. **Amazon SNS Topic Initialization:** Create an SNS Topic along with an email subscription to receive alert notifications.
+4. **Automation Process Initialization:** Use DynamoDB to track failed login counts. Develop a Lambda function in Python to extract IPs, count failures, and create NACL rules; link a Subscription Filter from the CloudWatch Log Group to Lambda.
+6. **Scenario Testing & Evaluation:** Use a tool/script to simulate an SSH Brute-Force attack with 5 failed attempts/minute to verify the SNS email alert workflow and automatic blocking via Network ACL.
 
 ## Technical Requirements
 

@@ -1,29 +1,43 @@
 <style type="text/css">
-.ghContributors{
-display:flex;
-flex-flow:  wrap;
-align-content: flex-start
-}
+  .ghContributors {
+    display: flex;
+    flex-flow: wrap;
+    align-content: flex-start;
+  }
 
-.ghContributors > div{
-width: 50% ;
-display: inline-flex;
-margin-bottom: 5px;
-}
-.ghContributors > div label{
-padding-left: 4px ;
-}
-.ghContributors > div span{
-font-size: x-small;
-padding-left: 4px ;
-}
-
+  .ghContributors > div {
+    width: 50%;
+    display: inline-flex;
+    margin-bottom: 5px;
+  }
+  .ghContributors > div label {
+    padding-left: 4px;
+  }
+  .ghContributors > div span {
+    font-size: x-small;
+    padding-left: 4px;
+  }
 </style>
 <div class="ghContributors">
-  {{ $url := .Get 0 }}
-  {{ range getJSON $url }}
+  {{ $url := .Get 0 }} {{ $contributors := slice }} {{/* Thay thế getJSON bằng
+  resources.GetRemote tương thích Hugo bản mới */}} {{ with resources.GetRemote
+  $url }} {{ with .Err }} {{ errorf "Lỗi khi lấy dữ liệu từ URL %s: %s" $url .
+  }} {{ else }} {{ $contributors = . | transform.Unmarshal }} {{ end }} {{ else
+  }} {{ warnf "Không thể tải dữ liệu từ URL: %s" $url }} {{ end }} {{ range
+  $contributors }}
   <div>
-    <img src="{{.avatar_url}}" class="inline" width="32" height="32" style="height: 32px;height: 32px;margin-bottom:.25em; vertical-align:middle; ">
+    <img
+      src="{{.avatar_url}}"
+      class="inline"
+      width="32"
+      height="32"
+      style="
+        height: 32px;
+        height: 32px;
+        margin-bottom: 0.25em;
+        vertical-align: middle;
+      "
+    />
     <label><a href="{{.html_url}}">@{{.login}}</a></label>
     <span class="contributions">{{.contributions}} commits</span>
   </div>

@@ -145,4 +145,4 @@ Nhìn chung, sự kiện đã cho tôi cơ hội kết nối với các chuyên 
 
 ## Check-in
 
-![Check-in at AWS VIETNAM COMMUNITY MEETUP](/images/event/event1.jpg)
+![Check-in at AWS VIETNAM COMMUNITY MEETUP](/images/4/4.1.jpg)

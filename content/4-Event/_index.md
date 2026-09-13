@@ -29,5 +29,7 @@ The following event summaries include:
 ## Events
 
 **Event 1:** [ AWS VIETNAM COMMUNITY MEETUP](4.1-Event1/_index.md)
+**Event 2:** [ TechMaker Coffee Talk #01](4.2-Event2/_index.md)
 
 <!-- **Week 1:** [AWS Fundamentals: IAM, EC2, VPC, Amazon S3 and AWS CLI](1.1-week1/) -->
+

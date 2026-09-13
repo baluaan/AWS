@@ -27,23 +27,17 @@ Việc cấu hình CloudWatch Agent mang lại các lợi ích quan trọng:
 
 1. Triển khai **Metric filters** theo các các bước sau:
 Truy cập vào **CloudWatch** > **Log management** > `/aws/ec2/security/auth` > **Metric filter** > **Create metric filter**
-![Truy cập vào Metric filter](/static/images/5/5/5.5.2.png)
+![Truy cập vào Metric filter](/images/5/5/5.5.2.png)
 Điền các thông tin:
  - Filter pattern: Failed password
  - Name: SSHBruteForceDetection
 Điền các thông tin như hình ảnh
-![Cấu hình](/static/images/5/5/5.5.1.png)
-2. Triển khai **Subscription filters** theo các các bước sau:
-Truy cập vào **CloudWatch** > **Log management** > `/aws/ec2/security/auth` > **Subscription filters** > **Create** > ` Create Lambda subcription filter`
-![Truy cập vào cấu hình](/static/images/5/5/1.png)
-Thực hiện cấu hình:
- - 
-
+![Cấu hình](/images/5/5/5.5.1.png)
 
 ---
 
 ## 3. Kết quả mong đợi
 
 Sau khi hoàn thành chương này, bạn sẽ đạt được:
-
-
+- Làm quen vơi CloudWatch, tạo được Metric Filter để lọc log
+- Hoàn thành chuẩn bị trước khi thực hiện cảnh bao ở chương sau

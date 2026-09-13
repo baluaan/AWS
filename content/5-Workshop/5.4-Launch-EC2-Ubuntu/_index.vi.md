@@ -32,7 +32,7 @@ Truy cập **VPC** > **Yours VPCs** chọn **Create VPC**
   - Chọn: VPC and more
   - Name: project-AWS-vpc
   - Chọn: Create VPC
-![Khởi tạo VPC](/static/images/5/5.4.1.png)
+![Khởi tạo VPC](/images/5/4/5.4.1.png)
 2. Khởi tạo IAM role cho EC2 theo các bước sau:
 Truy cập **IAM** > **Roles** chọn **Create Role**
 - Cấu hình như sau:
@@ -40,7 +40,7 @@ Truy cập **IAM** > **Roles** chọn **Create Role**
   - Permission: CloudWatchAgentServerpolicy
   - Chọn **Next** 
   - Name: EC2-CloudWatch-Agent-Role
-![khởi tạo IAM](/static/images/5/5.4.8.png)
+![khởi tạo IAM](/images/5/4/5.4.8.png)
 3. Quy trình khởi tạo máy EC2 unbutu được chia thành các bước sau:
 
 **Bước 1:** Khởi tạo EC2:
@@ -52,15 +52,15 @@ Truy cập **IAM** > **Roles** chọn **Create Role**
   - Key pair: unbutu.pem
   - Network: chọn **edit** sau đó chọn vpc vừa tạo và chọn subnet public
   - Chọn: **Launch instance**
-![Khởi tạo EC2](/static/images/5/5.4.2.png)
-![Tiếp tục khởi tạo](/static/images/5/5.4.3.png)
+![Khởi tạo EC2](/images/5/4/5.4.2.png)
+![Tiếp tục khởi tạo](/images/5/4/5.4.3.png)
 **Bước 2:** Cấu hình máy EC2 vừa tạo
 - Thực hiện theo các lệnh sau: 
   - sudo apt update
   - sudo apt install -y wget
   - wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
   - sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
-![Tải môi trường Cloudwatch](/static/images/5/5.4.4.png)
+![Tải môi trường Cloudwatch](/images/5/4/5.4.4.png)
   - sudo nano /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/file_amazon-cloudwatch-agent.json
   Sau đó dán đoạn lệnh này vào:
 ```json
@@ -115,7 +115,7 @@ Truy cập **IAM** > **Roles** chọn **Create Role**
   }
 }
 ```
-![Cấu hình giám sát đăng nhập](/static/images/5/5.4.5.png)
+![Cấu hình giám sát đăng nhập](/images/5/4/5.4.5.png)
 - Dùng đoạn lệnh để khởi động file vừa tạo:
 ```json 
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
@@ -126,9 +126,9 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 ```
 4. Gán role IAM cho máy EC2
 Truy cập EC2 vừa tạo sau đó chọn **Action** > **Security** > **Modify IAM Role**
-![Mở giao diện gán role](/static/images/5/5.4.6.png)
+![Mở giao diện gán role](/images/5/4/5.4.6.png)
 Lựa chọn IAM role vừa tạo 
-![Lựa chọn role](/static/images/5/5.4.7.png)
+![Lựa chọn role](/images/5/4/5.4.7.png)
 ---
 
 ## 3. Kết quả mong đợi

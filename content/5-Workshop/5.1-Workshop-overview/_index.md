@@ -27,42 +27,29 @@ All system login logs are pushed centrally to **Amazon CloudWatch Logs** by the 
 The **AWS SSH Automated Threat Protection** architecture is deployed following a Serverless model on AWS, divided into 3 main functional layers:
 
 - **Data Collection & Ingestion Layer:** Consists of **Amazon EC2 Ubuntu** (SSH Server), **CloudWatch Agent** (Collects `/var/log/auth.log`), and **CloudWatch Logs Group** (Centralized authentication log storage).
-- **Processing & State Management Layer:** Consists of **Subscription Filter** (Filters `Failed password` pattern), **AWS Lambda** (Serverless function for decoding, IP extraction, and API calls), and **Amazon DynamoDB** (Stores failure counts per IP within a 1-minute window).
+- **Processing & State Management Layer:** Consists of **Subscription Filter** and **Metric filter** (Filters `Failed password` pattern), **AWS Lambda** (Serverless function for decoding, IP extraction, and API calls), and **Amazon DynamoDB** (Stores failure counts per IP within a 1-minute window).
 - **Remediation & Perimeter Enforcement Layer:** Consists of **Amazon SNS** (Dispatches incident email alerts), **Network ACL (NACL)** (Enforces `DENY` `/32` rules to block attacking IP connections at the Subnet layer), and **AWS IAM Role** (Grants secure execution permissions to Lambda).
 
 **Figure 1 – AWS SSH Automated Threat Protection System Architecture**
 
-![System Architecture](/images/proposal/system_architecture1.png)
+![System Architecture](/images/2/1.jpg)
 
 ---
 
 ## 3. System Execution Workflow
 
-The core processing flow of the system occurs across 12 steps:
+The core processing flow of the system occurs across 10 steps:
 
-1. An Attacker performs invalid SSH login attempts against the **Amazon EC2 Ubuntu** server.
-
-2. The SSH Server on EC2 logs the failed login event into the system log file `/var/log/auth.log`.
-
-3. The **CloudWatch Agent** installed on EC2 automatically streams new log entries to **CloudWatch Logs Group**.
-
-4. The **Subscription Filter** scans logs, detects event strings matching the `Failed password` pattern, and sends the event payload to **AWS Lambda**.
-
-5. **AWS Lambda** decompresses the compressed payload and uses Regular Expressions (Regex) to parse the exact source IP address (`clientIp`).
-
-6. Lambda queries and increments the failed attempt count for that IP in the **Amazon DynamoDB** table.
-
-7. Lambda checks the total number of failures within the last 1-minute rolling window.
-
-8. If the failure count is less than 5, Lambda completes execution, and the system continues monitoring.
-
-9. If the failure count reaches **5 attempts / 1 minute** or more, the system sends an email alert via **Amazon SNS**, and Lambda triggers the automated response workflow.
-
-10. Lambda inspects the current rule list on the **Network ACL** attached to the EC2 Subnet.
-
-11. If the IP is not already in the block list, Lambda automatically inserts a `DENY` rule for the offending IP in CIDR `/32` format.
-
-12. The Network ACL immediately denies all incoming SSH connection packets from the offending IP address right at the Subnet perimeter.
+1. An attacker executes invalid SSH login attempts into the **Amazon EC2 Ubuntu** server.
+2. The SSH Server on the EC2 instance records failed login events into the system log file `/var/log/auth.log`.
+3. The **CloudWatch Agent** installed on the EC2 instance automatically pushes new log data to the **CloudWatch Logs Group**.
+4. The **Subscription Filter** scans the logs, detects event strings matching the pattern configuration `Failed password`, and forwards the event payload to **AWS Lambda**.
+5. **AWS Lambda** decompresses the data and uses regular expressions (Regex) to accurately extract the source IP address (`clientIp`).
+6. Lambda queries and increments the failed login counter for that IP address in an **Amazon DynamoDB** table.
+7. Lambda checks the total number of failures within the most recent 1-minute window.
+8. If the failure count is less than 5, Lambda terminates the process, and the system continues monitoring.
+9. If the failure count reaches **5 times/1 minute** or more, Lambda triggers an automated response workflow via **Network ACL** to block the IP.
+10. The **Metric filter** is checked; if it exceeds the threshold of **5 times/1 minute**, it triggers the **SNS topic** to send an email alert.
 
 ---
 
@@ -72,13 +59,13 @@ This workshop utilizes the following AWS services:
 
 ### Infrastructure and Log Management
 
-- **Amazon EC2:** Ubuntu Linux 22.04 LTS server running the SSH Server daemon.
+- **Amazon EC2:** Ubuntu Linux server running the SSH Server daemon.
 - **Amazon CloudWatch Logs:** Centralized collection, storage, and management of SSH login logs.
-- **CloudWatch Subscription Filter:** Scans and filters event log streams using pattern matching.
+- **CloudWatch Subscription Filter and Metric Filter:** Scans and filters event log streams using pattern matching.
 
 ### State Management, Alerting, and Automation
 
-- **AWS Lambda:** Executes Python 3.12 code (using AWS Boto3 SDK) to process IP extraction logic, trigger alerts, and make API calls.
+- **AWS Lambda:** Executes Python code (using AWS Boto3 SDK) to process IP extraction logic, trigger alerts, and make API calls.
 - **Amazon DynamoDB:** NoSQL database storing failure counts per IP and time window.
 - **Amazon SNS:** Automated messaging service delivering email security alerts to administrators.
 
@@ -98,7 +85,7 @@ This workshop utilizes the following AWS services:
 Upon completing this workshop, you will be able to:
 
 - Launch an EC2 Ubuntu server, configure SSH, and install CloudWatch Agent to stream `/var/log/auth.log` centrally.
-- Configure CloudWatch Subscription Filter with the `Failed password` pattern to filter failed authentication events.
+- Configure CloudWatch Subscription Filter and Metric Filter with the `Failed password` pattern to filter failed authentication events.
 - Create an Amazon DynamoDB table to maintain IP tracking counters under a 1-minute window, alongside an Amazon SNS topic for email alerts.
 - Develop an AWS Lambda function using Python 3.12 to extract offending IPs, interact with DynamoDB, publish SNS messages, and execute Network ACL API calls.
 - Assign precise IAM Role permissions for Lambda to securely interact with CloudWatch Logs, DynamoDB, Amazon SNS, and EC2 Network ACLs.

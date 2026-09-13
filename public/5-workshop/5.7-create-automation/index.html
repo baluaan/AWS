@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head><script src="/AWS/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=AWS/livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.159.2">
+    <meta name="description" content="">
+<meta name="author" content="thienlh@thienlu.com">
+
+    <link rel="icon" href="../../images/favicon.png" type="image/png">
+
+    <title>Initialize Automated Incident Response | Internship Report</title>
+
+    
+    <link href="../../css/nucleus.css?1789314171" rel="stylesheet">
+    <link href="../../css/fontawesome-all.min.css?1789314171" rel="stylesheet">
+    <link href="../../css/hybrid.css?1789314171" rel="stylesheet">
+    <link href="../../css/featherlight.min.css?1789314171" rel="stylesheet">
+    <link href="../../css/perfect-scrollbar.min.css?1789314171" rel="stylesheet">
+    <link href="../../css/auto-complete.css?1789314171" rel="stylesheet">
+    <link href="../../css/atom-one-dark-reasonable.css?1789314171" rel="stylesheet">
+    <link href="../../css/theme.css?1789314171" rel="stylesheet">
+    <link href="../../css/hugo-theme.css?1789314171" rel="stylesheet">
+    
+    <link href="../../css/theme-workshop.css?1789314171" rel="stylesheet">
+    
+    
+
+    <script src="../../js/jquery-3.3.1.min.js?1789314171"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+        
+    </style>
+    
+  </head>
+  <body class="" data-url="../../5-workshop/5.7-create-automation/">
+    <nav
+  id="sidebar"
+  class=""
+>
+   
+  <div id="header-wrapper">
+    <div id="header"><a id="logo" href="../../">
+  <svg id="Layer_1" data-name="Layer 1" viewBox="0 0 60 30" width="30%">
+    <defs>
+      <style>
+        .cls-1 {
+          fill: #fff;
+        }
+        .cls-2 {
+          fill: #fff;
+          fill-rule: evenodd;
+        }
+      </style>
+    </defs>
+    <title>AWS-Logo_White-Color</title>
+    <path
+      class="cls-1"
+      d="M14.09 10.85a4.7 4.7.0 00.19 1.48 7.73 7.73.0 00.54 1.19.77.77.0 01.12.38.64.64.0 01-.32.49l-1 .7a.83.83.0 01-.44.15.69.69.0 01-.49-.23 3.8 3.8.0 01-.6-.77q-.25-.42-.51-1a6.14 6.14.0 01-4.89 2.3 4.54 4.54.0 01-3.32-1.19 4.27 4.27.0 01-1.22-3.2 4.28 4.28.0 011.46-3.4A6.06 6.06.0 017.69 6.46a12.47 12.47.0 011.76.13q.92.13 1.91.36V5.73a3.65 3.65.0 00-.79-2.66A3.81 3.81.0 007.86 2.3a7.71 7.71.0 00-1.79.22 12.78 12.78.0 00-1.79.57 4.55 4.55.0 01-.58.22h-.26q-.35.0-.35-.52V2a1.09 1.09.0 01.12-.58 1.2 1.2.0 01.47-.35A10.88 10.88.0 015.77.32 10.19 10.19.0 018.36.0a6 6 0 014.35 1.35 5.49 5.49.0 011.38 4.09zM7.34 13.38a5.36 5.36.0 001.72-.31A3.63 3.63.0 0010.63 12 2.62 2.62.0 0011.19 11a5.63 5.63.0 00.16-1.44v-.7a14.35 14.35.0 00-1.53-.28 12.37 12.37.0 00-1.56-.1 3.84 3.84.0 00-2.47.67A2.34 2.34.0 005 11a2.35 2.35.0 00.61 1.76A2.4 2.4.0 007.34 13.38zm13.35 1.8a1 1 0 01-.64-.16 1.3 1.3.0 01-.35-.65L15.81 1.51a3 3 0 01-.15-.67.36.36.0 01.41-.41H17.7a1 1 0 01.65.16 1.4 1.4.0 01.33.65l2.79 11 2.59-11A1.17 1.17.0 0124.39.6a1.1 1.1.0 01.67-.16H26.4a1.1 1.1.0 01.67.16 1.17 1.17.0 01.32.65L30 12.39 32.88 1.25A1.39 1.39.0 0133.22.6a1 1 0 01.65-.16h1.54a.36.36.0 01.41.41 1.36 1.36.0 010 .26 3.64 3.64.0 01-.12.41l-4 12.86a1.3 1.3.0 01-.35.65 1 1 0 01-.64.16H29.25a1 1 0 01-.67-.17 1.26 1.26.0 01-.32-.67L25.67 3.64l-2.56 10.7a1.26 1.26.0 01-.32.67 1 1 0 01-.67.17zm21.36.44a11.28 11.28.0 01-2.56-.29 7.44 7.44.0 01-1.92-.67 1 1 0 01-.61-.93v-.84q0-.52.38-.52a.9.9.0 01.31.06l.42.17a8.77 8.77.0 001.83.58 9.78 9.78.0 002 .2 4.48 4.48.0 002.43-.55 1.76 1.76.0 00.86-1.57 1.61 1.61.0 00-.45-1.16A4.29 4.29.0 0043 9.22l-2.41-.76A5.15 5.15.0 0138 6.78a3.94 3.94.0 01-.83-2.41 3.7 3.7.0 01.45-1.85 4.47 4.47.0 011.19-1.37 5.27 5.27.0 011.7-.86A7.4 7.4.0 0142.6.0a8.87 8.87.0 011.12.07q.57.07 1.08.19t.95.26a4.27 4.27.0 01.7.29 1.59 1.59.0 01.49.41.94.94.0 01.15.55v.79q0 .52-.38.52a1.76 1.76.0 01-.64-.2 7.74 7.74.0 00-3.2-.64 4.37 4.37.0 00-2.21.47 1.6 1.6.0 00-.79 1.48 1.58 1.58.0 00.49 1.18 4.94 4.94.0 001.83.92L44.55 7a5.08 5.08.0 012.57 1.6A3.76 3.76.0 0147.9 11a4.21 4.21.0 01-.44 1.93 4.4 4.4.0 01-1.21 1.47 5.43 5.43.0 01-1.85.93A8.25 8.25.0 0142.05 15.62z"
+    ></path>
+    <path
+      class="cls-2"
+      d="M45.19 23.81C39.72 27.85 31.78 30 25 30A36.64 36.64.0 01.22 20.57c-.51-.46-.06-1.09.56-.74A49.78 49.78.0 0025.53 26.4 49.23 49.23.0 0044.4 22.53C45.32 22.14 46.1 23.14 45.19 23.81z"
+    ></path>
+    <path
+      class="cls-2"
+      d="M47.47 21.21c-.7-.9-4.63-.42-6.39-.21-.53.06-.62-.4-.14-.74 3.13-2.2 8.27-1.57 8.86-.83s-.16 5.89-3.09 8.35c-.45.38-.88.18-.68-.32C46.69 25.8 48.17 22.11 47.47 21.21z"
+    ></path>
+  </svg>
+</a>
+</div>
+     <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="../../js/lunr.min.js?1789314171"></script>
+<script type="text/javascript" src="../../js/auto-complete.js?1789314171"></script>
+<script type="text/javascript">
+      
+        var baseurl = "http:\/\/localhost:1313\/AWS\/";
+      
+</script>
+<script type="text/javascript" src="../../js/search.js?1789314171"></script> 
+  </div>
+
+  <div class="highlightable">
+    <ul class="topics">
+               
+<li
+  data-nav-id="/1-worklog/"
+  title="Worklog"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/">
+     <b> 1. </b> Worklog 
+  </a>
+   
+  <ul>
+          
+            
+<li
+  data-nav-id="/1-worklog/1.1-week1/"
+  title="Worklog - Week 1"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.1-week1/">
+     <b> 1.1. </b> Worklog - Week 1 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.2-week2/"
+  title="Worklog - Week 2"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.2-week2/">
+     <b> 1.2. </b> Worklog - Week 2 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.3-week3/"
+  title="Worklog - Week 3"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.3-week3/">
+     <b> 1.3. </b> Worklog - Week 3 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.4-week4/"
+  title="Worklog - Week 4"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.4-week4/">
+     <b> 1.4. </b> Worklog - Week 4 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.5-week5/"
+  title="Worklog - Week 5"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.5-week5/">
+     <b> 1.5. </b> Worklog - Week 5 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.6-week6/"
+  title="Worklog - Week 6"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.6-week6/">
+     <b> 1.6. </b> Worklog - Week 6 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.7-week7/"
+  title="Worklog - Week 7"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.7-week7/">
+     <b> 1.7. </b> Worklog - Week 7 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/1-worklog/1.8-week8/"
+  title="Worklog - Week 8"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../1-worklog/1.8-week8/">
+     <b> 1.8. </b> Worklog - Week 8 
+  </a>
+   
+</li>
+     
+  </ul>
+  
+</li>
+           
+<li
+  data-nav-id="/2-proposal/"
+  title="Proposal"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../2-proposal/">
+     <b> 2. </b> Proposal 
+  </a>
+   
+</li>
+           
+<li
+  data-nav-id="/3-blogsposted/"
+  title="Blogs Posted"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../3-blogsposted/">
+     <b> 3. </b> Blogs Posted 
+  </a>
+   
+  <ul>
+          
+            
+<li
+  data-nav-id="/3-blogsposted/3.1-blog1/"
+  title="Blog 1"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../3-blogsposted/3.1-blog1/">
+     <b> 3.1. </b> Blog 1 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/3-blogsposted/3.2-blog2/"
+  title="Blog 2"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../3-blogsposted/3.2-blog2/">
+    <b>3.2. </b>Blog 2 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/3-blogsposted/3.3-blog3/"
+  title="Blog 3"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../3-blogsposted/3.3-blog3/">
+     <b> 3.3. </b> Blog 3 
+  </a>
+   
+</li>
+     
+  </ul>
+  
+</li>
+           
+<li
+  data-nav-id="/4-event/"
+  title="Events"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../4-event/">
+     <b> 4. </b> Events 
+  </a>
+   
+  <ul>
+          
+            
+<li
+  data-nav-id="/4-event/4.1-event1/"
+  title="Event 1 - AWS VIETNAM COMMUNITY MEETUP"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../4-event/4.1-event1/">
+     <b> 4.1. </b> Event 1 - AWS VIETNAM COMMUNITY MEETUP 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/4-event/4.2-event2/"
+  title="Event - TechMaker Coffee Talk #01: AI for User Growth &amp; Acquisition"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../4-event/4.2-event2/">
+     <b> 4.2. </b> Event - TechMaker Coffee Talk #01: AI for User Growth &amp; Acquisition 
+  </a>
+   
+</li>
+     
+  </ul>
+  
+</li>
+           
+<li
+  data-nav-id="/5-workshop/"
+  title="Workshop"
+  class="dd-item 
+        parent
+        
+        
+        "
+>
+  <a href="../../5-workshop/">
+     <b> 5. </b> Workshop 
+  </a>
+   
+  <ul>
+          
+            
+<li
+  data-nav-id="/5-workshop/5.1-workshop-overview/"
+  title="Workshop Overview"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.1-workshop-overview/">
+     <b> 5.1. </b> Workshop Overview 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.2-prerequisite/"
+  title="Prerequisites"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.2-prerequisite/">
+     <b> 5.2. </b> Prerequisites 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.3-project-foundation/"
+  title="Project Preparation"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.3-project-foundation/">
+     <b> 5.3. </b> Project Preparation 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.4-launch-ec2-ubuntu/"
+  title="Launch Amazon EC2 Ubuntu Server"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.4-launch-ec2-ubuntu/">
+     <b> 5.4. </b> Launch Amazon EC2 Ubuntu Server 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.5-configure-cloudwatch/"
+  title="Configure CloudWatch Agent"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.5-configure-cloudwatch/">
+     <b> 5.5. </b> Configure CloudWatch Agent 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.6-create-sns/"
+  title="Deploying SNS"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.6-create-sns/">
+     <b> 5.6. </b> Deploying SNS 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.7-create-automation/"
+  title="Initialize Automated Incident Response"
+  class="dd-item 
+        
+        active
+        
+        "
+>
+  <a href="../../5-workshop/5.7-create-automation/">
+     <b> 5.7. </b> Initialize Automated Incident Response 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.8-testing-automation/"
+  title="System Testing"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.8-testing-automation/">
+     <b> 5.8. </b> System Testing 
+  </a>
+   
+</li>
+    
+            
+<li
+  data-nav-id="/5-workshop/5.9-cleanup/"
+  title="Delete System Resources"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../5-workshop/5.9-cleanup/">
+     <b> 5.9. </b> Delete System Resources 
+  </a>
+   
+</li>
+     
+  </ul>
+  
+</li>
+           
+<li
+  data-nav-id="/6-self-evaluation/"
+  title="Self Assessment"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../6-self-evaluation/">
+     <b> 6. </b> Self Assessment 
+  </a>
+   
+</li>
+           
+<li
+  data-nav-id="/7-feedback/"
+  title="Sharing and Feedback"
+  class="dd-item 
+        
+        
+        
+        "
+>
+  <a href="../../7-feedback/">
+     <b> 7. </b> Sharing and Feedback 
+  </a>
+   
+</li>
+    
+    </ul>
+
+     
+    <section id="shortcuts">
+      <h3>
+        More
+      </h3>
+      <ul>
+        
+        <li>
+          <a class="padding" href="https://awsstudygroup.com"
+            ><i class='fab fa-aws'></i> AWS Study Group - Blog</a
+          >
+        </li>
+        
+        <li>
+          <a class="padding" href="https://www.facebook.com/groups/awsstudygroupfcj"
+            ><i class='fab fa-facebook'></i> AWS Study Group - FB Group</a
+          >
+        </li>
+        
+      </ul>
+    </section>
+     
+    <section id="prefooter">
+      <hr />
+      <ul>
+        
+        <li>
+          <a class="padding">
+            <i class="fas fa-language fa-fw"></i>
+            <div class="select-style">
+              <select id="select-language" onchange="location = this.value">
+                 
+                <option
+                  id="en"
+                  value="http://localhost:1313/AWS/5-workshop/5.7-create-automation/"
+                  selected
+                >
+                  English
+                </option>
+                
+                <option
+                  id="vi"
+                  value="http://localhost:1313/AWS/vi/5-workshop/5.7-create-automation/"
+                  
+                >
+                  Tiếng Việt
+                </option>
+                
+              </select>
+              <svg
+                version="1.1"
+                id="Capa_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                x="0px"
+                y="0px"
+                width="255px"
+                height="255px"
+                viewBox="0 0 255 255"
+                style="enable-background: new 0 0 255 255"
+                xml:space="preserve"
+              >
+                <g>
+                  <g id="arrow-drop-down">
+                    <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </a>
+        </li>
+         
+      </ul>
+    </section>
+    
+    <section id="footer"><left>
+  <br />
+  <br />
+  <b> Last Updated </b> <br />
+  <i><font color="orange">10-09-2026</font></i>
+</left>
+<left>
+  <br />
+  <br />
+  <b> Team </b> <br />
+
+  <i>
+    <a href="https://www.linkedin.com/in/jotaguy" style="color: orange"
+      >First Cloud AI Journey</a
+    >
+  </i>
+</left>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+</section>
+  </div>
+</nav>
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='../../'>Internship Report</a> > <a href='../../5-workshop/'>Workshop</a> > Initialize Automated Incident Response
+          
+        
+          
+        
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#objective">Objective</a></li>
+      </ul>
+    </li>
+    <li><a href="#1-overview">1. Overview</a></li>
+    <li><a href="#2-deployment-procedure">2. Deployment Procedure</a></li>
+    <li><a href="#code"><img src="../../images/5/7/22.png" alt="code"></a></li>
+    <li><a href="#4-expected-results">4. Expected Results</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Initialize Automated Incident Response
+            </h1>
+          
+
+        
+
+
+	<h3 id="objective">Objective</h3>
+<p>Initialize Amazon Lambda, DynamoDB, IAM, CloudWatch, and NACL services to create an automated incident response workflow when under SSH attack.
+Successfully block the attacker&rsquo;s IP address.</p>
+<hr>
+<h2 id="1-overview">1. Overview</h2>
+<p>In this architecture:</p>
+<ul>
+<li><strong>Amazon CloudWatch</strong> CloudWatch Agent collects <code>/var/log/auth.log</code> from the EC2 instance. Subscription Filter scans for Failed password events and forwards the payload to AWS Lambda.</li>
+<li><strong>AWS Lambda</strong> Decodes logs, extracts offending IPs via Regex, interacts with DynamoDB to track failed attempt counts, sends notification emails via SNS, and automatically inserts DENY rules into the NACL.</li>
+<li><strong>Amazon DynamoDB</strong> Stores failed login counts grouped by IP and timestamp (within 1 minute) to evaluate violation thresholds (≥ 5 times/1 minute).</li>
+<li><strong>AWS IAM</strong> Provides secure permissions for EC2 to push logs to CloudWatch and grants Lambda access to operate on DynamoDB, Network ACL, and CloudWatch Logs.</li>
+<li><strong>Network ACL</strong> Completely blocks SSH packets from offending IPs directly at the VPC network layer before connections can reach the EC2 instance.</li>
+</ul>
+<hr>
+<h2 id="2-deployment-procedure">2. Deployment Procedure</h2>
+<ol>
+<li>Initialize the IAM role following these steps:</li>
+</ol>
+<p><strong>Step 1</strong> Navigate to <strong>IAM</strong> &gt; <strong>Roles</strong> and select <strong>Create Role</strong></p>
+<ul>
+<li>Configure as follows:
+<ul>
+<li>Trusted entity type: AWS service</li>
+<li>Use case: Lambda</li>
+<li>Select: Next
+<img src="../../images/5/7/8.png" alt="Step1"></li>
+</ul>
+</li>
+</ul>
+<p><strong>Step 2</strong> Add permissions</p>
+<ul>
+<li>Select: Create inline policy</li>
+<li>Policy:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;2012-10-17&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Statement&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Action&#34;</span>: [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;ec2:CreateNetworkAclEntry&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;ec2:DescribeNetworkAcls&#34;</span>
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Resource&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>Select: Next
+<img src="../../images/5/7/9.png" alt="Step2"></li>
+</ul>
+<p><strong>Step 3</strong>
+Set role name: <code>Lambda-SSH-AutoBlock-Role</code>
+Set Inline policy name: <code>LambdaSSHAutoBlockRole</code>
+Select: <strong>Create</strong>
+<img src="../../images/5/7/10.png" alt="Role name">
+<img src="../../images/5/7/11.png" alt="Inline policy name">
+Go to the created IAM role to add policy <code>AWSLAmbdaBasicExcutionRole</code>
+<img src="../../images/5/7/14.png" alt="Add Policy"></p>
+<ol start="2">
+<li>Initialize and configure <strong>Network ACLs</strong></li>
+</ol>
+<p><strong>Step 1</strong> Initialize Network ACL
+Navigate to <strong>VPC</strong> &gt; <strong>Network ACLs</strong> &gt; <strong>Create network ACL</strong></p>
+<ul>
+<li>Name: Name: SSH-Auto-Block-NACL</li>
+<li>VPC: select the VPC created during the EC2 creation step</li>
+<li>Tag: select Key: Name, Value: Name: SSH-Auto-Block-NACL</li>
+<li>Create network ACL
+<img src="../../images/5/7/4.png" alt="Step1"></li>
+</ul>
+<p><strong>Step 2</strong> Configure the newly created Network ACL
+Navigate to <strong>VPC</strong> &gt; <strong>Network ACLs</strong> &gt; <strong>acl-050ea4da0cd7e08aa / Name: SSH-Auto-Block-NACL</strong><br>
+First select: <strong>Edit subnet associations</strong><br>
+Select <code>Subnet public 1</code> as the EC2 instance was created using that Subnet<br>
+Then <strong>Save changes</strong>
+<img src="../../images/5/7/5.png" alt="Step2"><br>
+Next, move to configuring <code>Inbound</code> and <code>outbound</code> rules<br>
+<code>Add new rule</code> with configuration:</p>
+<ul>
+<li>Rule number: 100</li>
+<li>Type: All traffic</li>
+<li>Destination: 0.0.0.0/0</li>
+<li>Allow
+<img src="../../images/5/7/6.png" alt="Inbound rule">
+<img src="../../images/5/7/7.png" alt="Outbound rule"></li>
+</ul>
+<ol start="3">
+<li>Initialize and configure Lambda function
+<strong>Step 1</strong> Create Lambda function
+Navigate step by step: <strong>Lambda</strong> &gt; <strong>Functions</strong> &gt; <strong>Create function</strong></li>
+</ol>
+<ul>
+<li>Select: Author from scratch</li>
+<li>Function name: ssh-auto-block</li>
+<li>Select: Python 3.14</li>
+<li>Additional settings &gt; Custom execution role: Lambda-SSH-AutoBlock-Role</li>
+<li>Save</li>
+<li>Create Function
+<img src="../../images/5/7/12.png" alt="Step1"></li>
+</ul>
+<p><strong>Step 2</strong> Configuration
+Access the newly created function <code>ssh-auto-block</code>
+Find the <code>Configuration</code> section, select <code>Environment variables</code>, and select <code>Edit</code>
+Configure:</p>
+<ul>
+<li>Key: NACL_ID</li>
+<li>Value: ID value of the newly created NACL <code>acl-050ea4da0cd7e08aa</code></li>
+<li>Save
+<img src="../../images/5/7/13.png" alt="Step2"></li>
+</ul>
+<ol start="4">
+<li>Create Subscription filters
+Navigate step by step: <strong>CloudWatch</strong> &gt; <strong>Log management</strong> &gt; <strong>/aws/ec2/security/auth</strong>
+Select <strong>Subscription filters</strong>
+Select <code>Create lambda subscription filter</code>
+<img src="../../images/5/7/15.png" alt="Navigate to filter creation section"></li>
+</ol>
+<p>After entering the filter creation section:</p>
+<ul>
+<li>Set destination: ssh-auto-block</li>
+<li>Subscription filter pattern: <code>&quot;Failed password&quot;</code></li>
+<li>Subscription filter name: ssh</li>
+<li>Then select <code>Start streaming</code>
+<img src="../../images/5/7/16.png" alt="Configuration"></li>
+</ul>
+<ol start="5">
+<li>Create DynamoDB
+<strong>Step 1</strong> Navigate step by step: <strong>DynamoDB</strong> &gt; <strong>Tables</strong> &gt; <strong>Create table</strong>
+Configure the table used for counting attack attempts to integrate with Lambda</li>
+</ol>
+<ul>
+<li>Name: SSHBruteforceCounter</li>
+<li>Partition key: id - string</li>
+<li>Create
+<img src="../../images/5/7/18.png" alt="Create DynamoDB"></li>
+</ul>
+<p><strong>Step 2</strong> Link environment
+Access the function <code>ssh-auto-block</code>
+Find the <code>Configuration</code> section, select <code>Environment variables</code>, and select <code>Edit</code>
+Configure:</p>
+<ul>
+<li>Key: TABLE_NAME</li>
+<li>Value: SSHBruteforceCounter</li>
+<li>Save
+<img src="../../images/5/7/19.png" alt="Step2"></li>
+</ul>
+<p><strong>Step 3</strong> Add permissions to IAM role
+Access <code>Lambda-SSH-AutoBlock-Role</code>, then <code>add permission</code> via <code>create inline policy</code>
+Add code to grant permission to update the DynamoDB table</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;2012-10-17&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Statement&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Action&#34;</span>: [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;dynamodb:UpdateItem&#34;</span>
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Resource&#34;</span>: <span style="color:#e6db74">&#34;arn:aws:dynamodb:*:133665990651:table/SSHBruteForceCounter&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="../../images/5/7/20.png" alt="Add permission"></p>
+<p>Then name the newly created permission:
+Name: LambdaSSHBruteForceDynamoDB
+Then select: Create policy
+<img src="../../images/5/7/21.png" alt="Name policy">
+6. Paste code for the function
+Access the function <code>ssh-auto-block</code>
+Go to the code section:
+Then select <code>Deploy</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> boto3
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> ipaddress
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> base64
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> gzip
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ec2 <span style="color:#f92672">=</span> boto3<span style="color:#f92672">.</span>client(<span style="color:#e6db74">&#34;ec2&#34;</span>)
+</span></span><span style="display:flex;"><span>dynamodb <span style="color:#f92672">=</span> boto3<span style="color:#f92672">.</span>resource(<span style="color:#e6db74">&#34;dynamodb&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NACL_ID <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>environ[<span style="color:#e6db74">&#34;NACL_ID&#34;</span>]
+</span></span><span style="display:flex;"><span>TABLE_NAME <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>environ[<span style="color:#e6db74">&#34;TABLE_NAME&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>table <span style="color:#f92672">=</span> dynamodb<span style="color:#f92672">.</span>Table(TABLE_NAME)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>THRESHOLD <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>WINDOW_SECONDS <span style="color:#f92672">=</span> <span style="color:#ae81ff">60</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">lambda_handler</span>(event, context):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Received CloudWatch Logs event&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 1. Decode CloudWatch Logs event</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        compressed_payload <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64decode(
+</span></span><span style="display:flex;"><span>            event[<span style="color:#e6db74">&#34;awslogs&#34;</span>][<span style="color:#e6db74">&#34;data&#34;</span>]
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        payload <span style="color:#f92672">=</span> gzip<span style="color:#f92672">.</span>decompress(
+</span></span><span style="display:flex;"><span>            compressed_payload
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(payload)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Failed to decode CloudWatch event:&#34;</span>)
+</span></span><span style="display:flex;"><span>        print(str(e))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;statusCode&#34;</span>: <span style="color:#ae81ff">400</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;Invalid CloudWatch Logs event&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. Process each SSH log</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> log_event <span style="color:#f92672">in</span> data[<span style="color:#e6db74">&#34;logEvents&#34;</span>]:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        message <span style="color:#f92672">=</span> log_event[<span style="color:#e6db74">&#34;message&#34;</span>]<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;SSH LOG:&#34;</span>)
+</span></span><span style="display:flex;"><span>        print(message)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 3. Extract attacker IP</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>search(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;Failed password.*from\s+(\d{1,3}(?:\.\d{1,3})</span><span style="color:#e6db74">{3}</span><span style="color:#e6db74">)&#34;</span>,
+</span></span><span style="display:flex;"><span>            message
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">match</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;No attacker IP found&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        attacker_ip <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span><span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;ATTACKER IP:&#34;</span>, attacker_ip)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 4. Validate IP</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            ipaddress<span style="color:#f92672">.</span>ip_address(attacker_ip)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;Invalid IP:&#34;</span>, attacker_ip)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 5. Create 1-minute bucket</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        current_time <span style="color:#f92672">=</span> int(time<span style="color:#f92672">.</span>time())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        minute_bucket <span style="color:#f92672">=</span> current_time <span style="color:#f92672">//</span> WINDOW_SECONDS
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        item_id <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>attacker_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">#</span><span style="color:#e6db74">{</span>minute_bucket<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        expiration <span style="color:#f92672">=</span> current_time <span style="color:#f92672">+</span> <span style="color:#ae81ff">120</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Counter ID:&#34;</span>, item_id)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 6. Increase failure counter</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> table<span style="color:#f92672">.</span>update_item(
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            Key<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;id&#34;</span>: item_id
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            UpdateExpression<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                ADD failure_count :one
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                SET expires_at = if_not_exists(expires_at, :expiration)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            ExpressionAttributeValues<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;:one&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;:expiration&#34;</span>: expiration
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            ReturnValues<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ALL_NEW&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        failure_count <span style="color:#f92672">=</span> response[<span style="color:#e6db74">&#34;Attributes&#34;</span>][<span style="color:#e6db74">&#34;failure_count&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Failed attempts:&#34;</span>,
+</span></span><span style="display:flex;"><span>            failure_count,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;/&#34;</span>,
+</span></span><span style="display:flex;"><span>            THRESHOLD
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 7. Check threshold</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> failure_count <span style="color:#f92672">&lt;</span> THRESHOLD:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>attacker_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">: &#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>failure_count<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{</span>THRESHOLD<span style="color:#e6db74">}</span><span style="color:#e6db74"> &#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;attempts - NOT BLOCKED&#34;</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 8. Threshold reached</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;THRESHOLD REACHED: &#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>attacker_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        cidr <span style="color:#f92672">=</span> attacker_ip <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/32&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 9. Check existing NACL rules</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> ec2<span style="color:#f92672">.</span>describe_network_acls(
+</span></span><span style="display:flex;"><span>            NetworkAclIds<span style="color:#f92672">=</span>[NACL_ID]
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        used_rules <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        already_blocked <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> acl <span style="color:#f92672">in</span> response[<span style="color:#e6db74">&#34;NetworkAcls&#34;</span>]:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> entry <span style="color:#f92672">in</span> acl[<span style="color:#e6db74">&#34;Entries&#34;</span>]:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                used_rules<span style="color:#f92672">.</span>append(
+</span></span><span style="display:flex;"><span>                    entry[<span style="color:#e6db74">&#34;RuleNumber&#34;</span>]
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (
+</span></span><span style="display:flex;"><span>                    entry<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;CidrBlock&#34;</span>) <span style="color:#f92672">==</span> cidr
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">and</span> entry<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;RuleAction&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;deny&#34;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">and</span> entry<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;Egress&#34;</span>) <span style="color:#f92672">is</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>                ):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    already_blocked <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> already_blocked:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;IP already blocked:&#34;</span>,
+</span></span><span style="display:flex;"><span>                cidr
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 10. Find available rule number</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        rule_number <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> rule_number <span style="color:#f92672">in</span> used_rules:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            rule_number <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 11. Create NACL DENY rule</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ==========================================</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            ec2<span style="color:#f92672">.</span>create_network_acl_entry(
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                NetworkAclId<span style="color:#f92672">=</span>NACL_ID,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                RuleNumber<span style="color:#f92672">=</span>rule_number,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                Protocol<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-1&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                RuleAction<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;deny&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                Egress<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                CidrBlock<span style="color:#f92672">=</span>cidr
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;SUCCESSFULLY BLOCKED:&#34;</span>,
+</span></span><span style="display:flex;"><span>                attacker_ip
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;NACL rule:&#34;</span>,
+</span></span><span style="display:flex;"><span>                rule_number
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Failed to create NACL rule:&#34;</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            print(str(e))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;statusCode&#34;</span>: <span style="color:#ae81ff">200</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;message&#34;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;SSH brute-force detection processed&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><h2 id="code"><img src="../../images/5/7/22.png" alt="code"></h2>
+<h2 id="4-expected-results">4. Expected Results</h2>
+<p>After completing this chapter, you will achieve:</p>
+<ul>
+<li>Successfully creating NACL rules to block or allow inbound and outbound traffic.</li>
+<li>Successfully creating a DynamoDB table to count <code>Failed Password</code> instances, combined with the Lambda function to trigger blocking of harmful IPs.</li>
+<li>Completing the configuration of the automated IP blocking feature when under SSH attack.</li>
+</ul>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="../../5-workshop/5.6-create-sns/" title="Deploying SNS"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="../../5-workshop/5.8-testing-automation/" title="System Testing" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="../../js/clipboard.min.js?1789314171"></script>
+    <script src="../../js/perfect-scrollbar.min.js?1789314171"></script>
+    <script src="../../js/perfect-scrollbar.jquery.min.js?1789314171"></script>
+    <script src="../../js/jquery.sticky.js?1789314171"></script>
+    <script src="../../js/featherlight.min.js?1789314171"></script>
+    <script src="../../js/highlight.pack.js?1789314171"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="../../js/modernizr.custom-3.6.0.js?1789314171"></script>
+    <script src="../../js/learn.js?1789314171"></script>
+    <script src="../../js/hugo-learn.js?1789314171"></script>
+
+    <link href="../../mermaid/mermaid.css?1789314171" rel="stylesheet" />
+    <script src="../../mermaid/mermaid.js?1789314171"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-158079754-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

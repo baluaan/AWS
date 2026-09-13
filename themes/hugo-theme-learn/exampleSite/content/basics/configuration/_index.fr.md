@@ -1,5 +1,4 @@
 ---
-date: 2016-04-09T16:50:16+02:00
 title: Configuration
 weight: 20
 ---
@@ -50,7 +49,7 @@ Si ce n'est pas déjà présent, ajoutez les lignes suivantes dans le fichier `c
 home = [ "HTML", "RSS", "JSON"]
 ```
 
-Le thème *Learn* utilise les dernières améliorations d'Hugo pour générer un fichier d'index JSON, prêt à être consommé par le moteur de recherche lunr.js.
+Le thème _Learn_ utilise les dernières améliorations d'Hugo pour générer un fichier d'index JSON, prêt à être consommé par le moteur de recherche lunr.js.
 
 > Hugo génère lunrjs index.json à la racine du dossier `public`.
 > Quand vous générez le site avec `hugo server`, Hugo génère le fichier en mémoire, il n'est donc pas disponible sur le disque.

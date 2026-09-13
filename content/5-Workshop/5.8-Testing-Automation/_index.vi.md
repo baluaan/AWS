@@ -1,31 +1,83 @@
 ---
-title: "Workshop"
-date: 2026-08-24
-weight: 5
+title: "Kiểm thử hệ thống"
+date: 2026-09-11
+weight: 8
 chapter: false
-pre: " <b> 5. </b> "
+pre: " <b> 5.8. </b> "
 ---
 
-# Triển Khai Bảo Vệ Static Website Và Tự Động Chặn IP Vi Phạm Với AWS WAF & Lambda
+## Mục tiêu
 
-#### Tổng quan
+Sau khi hoàn tất cấu hình toàn bộ hạ tầng (EC2, CloudWatch Logs, Metric Filter, Subcriprion filter, CloudWatch Alarm, AWS Lambda, DynamoDB, NACL, SNS Topic), bước kiểm thử này nhằm xác minh khả năng tự động phản ứng của hệ thống đối với đợt tấn công SSH.
 
-Trong workshop này, chúng ta sẽ xây dựng và triển khai giải pháp **Automated Threat Protection** (Phản ứng và ngăn chặn tấn công tự động) cho website tĩnh theo kiến trúc Cloud-Native Serverless trên hạ tầng AWS.
+---
+### Kịch bản kiểm thử
+Sử dụng kali linux thực hiện tấn công hydra vào địa chỉ ip máy EC2 Unbutu để kich hoạt phản ứng tự động
 
-Giải pháp sử dụng các dịch vụ cốt lõi của AWS bao gồm **Amazon S3**, **Amazon CloudFront**, **AWS WAF**, **Amazon CloudWatch**, **Amazon SNS**, **AWS Lambda** và **AWS IAM** nhằm thiết lập cơ chế giám sát lưu lượng, phát hiện hành vi truy cập bất thường (như HTTP Flood / Rate-limit breach) và tự động cập nhật danh sách IP đen (WAF IP Set V6) ở lớp Edge mà không cần sự can thiệp thủ công từ quản trị viên.
+---
+### Các bước thực hiện kiểm thử
 
-Trong suốt bài workshop này, bạn sẽ thực hành trọn vẹn quy trình triển khai: từ chuẩn bị nền tảng dự án, cấu hình hạ tầng lưu trữ S3 & CDN CloudFront, thiết lập các bộ quy tắc bảo mật WAF Web ACL, cài đặt kênh thông báo SNS, lập trình tự động hóa với AWS Lambda (Python 3.12), đến việc cấu hình CloudWatch Alarm, thực thi kịch bản giả lập tấn công kiểm thử thực tế và dọn dẹp an toàn tài nguyên sau thử nghiệm.
+#### Bước 1: Thực hiện tấn công bằng kali linux
 
-#### Nội dung
+Mở Command Prompt (CMD) trên máy Kali linux để sử dụng công cụ hydra tấn công đăng nhập vào user: `ssh` với danh sách mật khẩu có sẵn.
 
-1. [Tổng quan Workshop](5.1-Workshop-overview/)
-2. [Điều kiện chuẩn bị](5.2-Prerequisite/)
-3. [Chuẩn bị dự án](5.3-Project-foundation/)
-4. [Host website tĩnh trên Amazon S3](5.4-Host-Static-Website-S3/)
-5. [Phân phối dữ liệu qua Amazon CloudFront](5.5-Distribute-via-CloudFront/)
-6. [Cấu hình AWS WAF & Logging](5.6-Configure-AWS-WAF-Logging/)
-7. [Khởi tạo Amazon SNS Topic](5.7-Create-SNS-Topic/)
-8. [Tạo IAM Role & Hàm AWS Lambda](5.8-Create-IAM-Role-Lambda/)
-9. [Cấu hình CloudWatch Alarm](5.9-Configure-CloudWatch-Alarm/)
-10. [Kiểm thử hệ thống](5.10-Testing/)
-11. [Dọn dẹp tài nguyên](5.11-Cleanup/)
+```cmd
+hydra -l ssh -P /usr/share/wordlists/rockyou.txt ssh://44.202.74.162 -t 4 
+```
+
+#### Bước 2: Kiểm tra Log và CloudWatch Alarm
+
+**CloudWatch Logs:**
+
+- Truy cập **CloudWatch > Log management > /aws/ec2/security/auth**
+- Kiểm tra các Log Stream mới nhất để xem lịch sử bị tấn công cùng các log hiện thị.
+![Các log mới nhất khi bị tấn công](/images/5/8/1.png)
+
+**CloudWatch Alarm:**
+
+- Truy cập **CloudWatch > Alarms > All alarms**.
+- Quan sát báo động `SSH-BruteForce-Detected`. Sau 1–3 phút, Metric Filter phát hiện vượt ngưỡng 5 lần / 1 phút và Alarm chuyển sang trạng thái **In alarm**.
+
+![Cảnh báo từ Alarm ](/images/5/8/2.png)
+
+
+#### Bước 3: Kiểm tra dữ liệu tại DynamoDB
+
+- Truy cập **DynamoDB > Tables > SSHBruteForceCounter > Explore table items**
+- Quan sát danh sách bảng `SSHBruteForceCounter` để xem số lượt đăng nhập thất bại.
+![Bảng DynamoDb đếm số lần đăng nhập thất bại](/images/5/8/3.png)
+
+
+#### Bước 4: Kiểm tra nhật ký thực thi AWS Lambda
+
+- Truy cập **AWS Lambda > chọn hàm `WAFAutoBlockFunction` > chọn tab Monitor > chọn View CloudWatch logs**.
+- Mở Log Stream mới nhất và kiểm tra nội dung nhật ký:
+![Nhật ký thực thi của hàm Lambda ](/images/5/8/4.png)
+
+#### Bước 5: Kiểm tra danh sách ip đã chặn trong NACL
+
+- Truy cập **VPC > Network ACLs > acl-050ea4da0cd7e08aa / Name: SSH-Auto-Block-NACL**
+- Tìm Inbound rule và quan sát danh sách ip bị chặn.
+- Địa chỉ ip `58.187.56.50/32` đã được thêm vào danh sách chặn.
+
+![Inbound rule chặn ip](/images/5/8/5.png)
+
+#### Bước 6: Kiểm tra Mail thông báo từ SNS
+
+Kiểm tra hộp thư đến của Gmail đã đăng ký với SNS Topic, bạn sẽ nhận được email cảnh báo `SH-BruteForce-Detected`
+![Cảnh báo gửi về mail](/images/5/8/6.png)
+
+
+---
+### Đánh giá kết quả
+
+| Hạng mục kiểm thử   | Trạng thái kỳ vọng                              | Trạng thái thực tế                                      | Kết luận   |
+| ------------------- | ----------------------------------------------- | ------------------------------------------------------- | ---------- |
+| Ghi nhận Log WAF    | Đẩy log truy cập về CloudWatch Logs             | Log xuất hiện trong Log Group  | Đạt (PASS) |
+| Kích hoạt Alarm     | Chuyển sang `IN ALARM` khi > 5 lần đăng nhập sai /1 min | Alarm kích hoạt chính xác khi đạt ngưỡng                | Đạt (PASS) |
+| Tự động hóa Lambda  | Trích xuất chính xác IP vi phạm (`ATTACKER IP`)    | Trích xuất thành công IPv6/IPv4 vi phạm                 | Đạt (PASS) |
+| Cập nhật NACL | Chặn IP của kẻ tấn công            | Đã từ chối `deny` các thông tin đi vào từ địa chỉ ip attacker             | Đạt (PASS) |
+| Dữ liệu DynamoDB    | Đếm được số lần đăng nhập sai của 1 ip | Đếm được số lần đăng nhập sai của 1 ip         | Đạt (PASS) |
+| Gửi thông báo Email | Gửi email thông báo về sự cố         | Email SNS gửi về Gmail để cảnh báo sự cố            | Đạt (PASS) |
+
+**Đánh giá chung:** Hệ thống phản ứng hoàn toàn tự động, phát hiện và ngăn chặn thành công địa chỉ ip tấn công theo đúng thiết kế kiến trúc đề ra.

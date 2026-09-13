@@ -34,7 +34,7 @@ Hệ thống phản ứng tự động này thao tác chính trên **AWS Managem
 1. Đăng nhập vào [AWS Management Console](https://aws.amazon.com/console/).
 2. Chọn khu vực (Region) triển khai hệ thống (ví dụ: **Asia Pacific (Singapore) — ap-southeast-1** hoặc **US East (N. Virginia) — us-east-1**) ở góc trên bên phải màn hình Console.
 
-> ⚠️ **LƯU Ý QUAN TRỌNG:** Tất cả các tài nguyên bao gồm EC2 Instance, CloudWatch Logs Group, Lambda Function, DynamoDB Table, SNS Topic và Network ACL phải được tạo **cùng một Region và trên cùng một VPC/Subnet** để đảm bảo khả năng liên kết và phản ứng chính xác.
+> **LƯU Ý QUAN TRỌNG:** Tất cả các tài nguyên bao gồm EC2 Instance, CloudWatch Logs Group, Lambda Function, DynamoDB Table, SNS Topic và Network ACL phải được tạo **cùng một Region và trên cùng một VPC/Subnet** để đảm bảo khả năng liên kết và phản ứng chính xác.
 
 **Checkpoint:** Tên Region trên thanh công cụ hiển thị thống nhất (ví dụ: **Asia Pacific (Singapore) ap-southeast-1**).
 

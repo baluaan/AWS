@@ -27,20 +27,20 @@ Enter the details in **Step 1**:
   - Period: 1 minute
   - Set threshold: Greater/Equal to 5 times per minute
   - Click: Next
-![Step1](/static/images/5/6/1.png)
+![Step1](/images/5/6/1.png)
 
 Next, proceed to **Step 2**:
   - Keep all default settings
   - Send a notification: SSH-Attack-Alerts
   - Email: caphonglon2004@gmail.com
   - Click: Next
-![Step2](/static/images/5/6/2.png)
+![Step2](/images/5/6/2.png)
 
 Finally, proceed to **Step 3**:
   - Name: SSH-BruteForce-Detected
   - Click: Next
   - Click: Create alarm
-![Step3](/static/images/5/6/3.png)
+![Step3](/images/5/6/3.png)
 
 2. Create **AWS SNS Topic**
 Go to **Amazon SNS** > **Topics** > **Create topic**
@@ -49,7 +49,7 @@ Enter the following information:
   - Name: SSH-Attack-Alerts
   - Display name: canh-bao
   - Click: Create topic
-![Create Topic](/static/images/5/6/4.png)
+![Create Topic](/images/5/6/4.png)
 
 3. Create **Subscription**
 Go to **Amazon SNS** > **Subscriptions** > **Create subscription**
@@ -58,7 +58,7 @@ Fill in the required information:
   - Protocol: Email
   - Endpoint: caphonglon2004@gmail.com
   - Click: Create subscription
-![Create subscription](/static/images/5/6/5.png)
+![Create subscription](/images/5/6/5.png)
 
 
 ## 3. Expected Results

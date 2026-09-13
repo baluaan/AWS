@@ -29,3 +29,4 @@ Các phần tóm tắt sự kiện dưới đây bao gồm:
 ## Các sự kiện
 
 **Sự kiện 1:** [AWS VIETNAM COMMUNITY MEETUP](4.1-Event1/_index.vi.md)
+**Sự kiện 2:** [ TechMaker Coffee Talk #01](4.2-Event2/_index.md)

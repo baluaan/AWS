@@ -145,4 +145,4 @@ Overall, the event gave me the opportunity to interact with cloud and AI profess
 
 ## Check-in
 
-![Check-in at AWS VIETNAM COMMUNITY MEETUP](/images/event/event1.jpg)
+![Check-in at AWS VIETNAM COMMUNITY MEETUP](/images/4/4.1.jpg)

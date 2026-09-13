@@ -1,5 +1,4 @@
 ---
-date: 2016-04-09T16:50:16+02:00
 title: Organisation des pages
 weight: 5
 ---
@@ -8,10 +7,10 @@ Dans **Hugo**, les pages sont le cœur de votre site. Une fois configurées, les
 
 ## Dossiers
 
-Organisez votre site comme n'importe quel autre [projet Hugo](https://gohugo.io/content/organization/). Typiquement, vous allez avoir un dossier *content* avec vos pages.
+Organisez votre site comme n'importe quel autre [projet Hugo](https://gohugo.io/content/organization/). Typiquement, vous allez avoir un dossier _content_ avec vos pages.
 
     content
-    ├── niveau-un 
+    ├── niveau-un
     │   ├── niveau-deux
     │   │   ├── niveau-trois
     │   │   │   ├── niveau-quatre
@@ -40,7 +39,7 @@ Le fichier `_index.md` est obligatoire dans chaque dossier, c'est en quelque sor
 
 ## Types
 
-**Hugo-theme-learn** définit deux types de pages. *Défaut* et *Chapitre*. Les deux sont utilisables à n'importe quel niveau du site, la seule différence est dans l'affichage.
+**Hugo-theme-learn** définit deux types de pages. _Défaut_ et _Chapitre_. Les deux sont utilisables à n'importe quel niveau du site, la seule différence est dans l'affichage.
 
 Un **Chapitre** affiche une page vouée à être une introduction pour un ensemble de pages filles. Habituellement, il va seulement contenir un titre et un résumé de la section.
 Vous pouvez définir n'importe quel contenu HTML comme préfixe de l'entrée du menu. Dans l'exemple ci-dessous, c'est juste un nombre mais vous pourriez utiliser une [icône](https://fortawesome.github.io/Font-Awesome/).
@@ -87,7 +86,7 @@ Une page **Défaut** est n'importe quelle autre page.
 
 ## Configuration des Front Matter
 
-Chaque page Hugo doit définir un [Front Matter](https://gohugo.io/content/front-matter/) dans le format *yaml*, *toml* ou *json*.
+Chaque page Hugo doit définir un [Front Matter](https://gohugo.io/content/front-matter/) dans le format _yaml_, _toml_ ou _json_.
 
 **Hugo-theme-learn** utilise les paramètres suivant en plus de ceux définis par Hugo:
 
@@ -104,7 +103,7 @@ post = ""
 chapter = false
 # Cache la page du menu
 hidden = false
-# Nom de la personne qui a modifié la page. Quand configuré, sera affiché dans le pied de page. 
+# Nom de la personne qui a modifié la page. Quand configuré, sera affiché dans le pied de page.
 LastModifierDisplayName = ""
 # Email de la personne qui a modifié la page. Quand configuré, sera affiché dans le pied de page.
 LastModifierEmail = ""
@@ -141,6 +140,6 @@ weight = 5
 
 Pour configurer votre page d'accueil, vous avez trois choix:
 
-1. Créer une page `_index.md` dans le dossier `content` et remplissez le fichier avec du *contenu Markdown*
-2. Créer une page `index.html` dans le dossier `static` et remplissez le fichier avec du *contenu HTML*
+1. Créer une page `_index.md` dans le dossier `content` et remplissez le fichier avec du _contenu Markdown_
+2. Créer une page `index.html` dans le dossier `static` et remplissez le fichier avec du _contenu HTML_
 3. Configurez votre serveur pour automatiquement rediriger la page d'accueil vers l'une de vos pages.

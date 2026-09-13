@@ -27,18 +27,18 @@ Toàn bộ log đăng nhập hệ thống được CloudWatch Agent đẩy tập
 Kiến trúc giải pháp **AWS SSH Automated Threat Protection** được triển khai theo mô hình Serverless trên AWS, được chia thành 3 nhóm chức năng chính:
 
 - **Data Collection & Ingestion Layer (Lớp thu thập & Quản lý Log):** Bao gồm **Amazon EC2 Ubuntu** (Máy chủ SSH), **CloudWatch Agent** (Thu thập `/var/log/auth.log`) và **CloudWatch Logs Group** (Lưu trữ log đăng nhập tập trung).
-- **Processing & State Management Layer (Lớp xử lý & Quản lý trạng thái):** Bao gồm **Subscription Filter** (Lọc pattern `Failed password`), **AWS Lambda** (Hàm Serverless giải mã, bóc tách IP và gọi API) và **Amazon DynamoDB** (Lưu giữ bộ đếm số lần thất bại theo IP trong 1 phút).
+- **Processing & State Management Layer (Lớp xử lý & Quản lý trạng thái):** Bao gồm **Subscription Filter** và **Metric filter** (Lọc pattern `Failed password`), **AWS Lambda** (Hàm Serverless giải mã, bóc tách IP và gọi API) và **Amazon DynamoDB** (Lưu giữ bộ đếm số lần thất bại theo IP trong 1 phút).
 - **Remediation & Perimeter Enforcement Layer (Lớp phản ứng & Ngăn chặn ranh giới):** Bao gồm **Amazon SNS** (Gửi mail cảnh báo sự cố), **Network ACL (NACL)** thực thi quy tắc `DENY` `/32` chặn kết nối IP tấn công ở tầng mạng Subnet và **AWS IAM Role** (Cấp quyền an toàn cho Lambda).
 
 **Hình 1 – Kiến trúc hệ thống AWS SSH Automated Threat Protection**
 
-![Kiến trúc hệ thống](/images/proposal/system_architecture1.png)
+![Kiến trúc hệ thống](/images/2/1.jpg)
 
 ---
 
 ## 3. Quy trình hoạt động của hệ thống
 
-Luồng xử lý chính của hệ thống diễn ra theo 12 bước:
+Luồng xử lý chính của hệ thống diễn ra theo 10 bước:
 
 1. Kẻ tấn công (Attacker) thực hiện các lượt đăng nhập SSH không hợp lệ vào máy chủ **Amazon EC2 Ubuntu**.
 2. SSH Server trên EC2 ghi nhận sự kiện đăng nhập thất bại vào file nhật ký hệ thống `/var/log/auth.log`.
@@ -48,10 +48,8 @@ Luồng xử lý chính của hệ thống diễn ra theo 12 bước:
 6. Lambda truy vấn và cập nhật tăng bộ đếm số lần đăng nhập thất bại cho địa chỉ IP đó trong bảng **Amazon DynamoDB**.
 7. Lambda kiểm tra tổng số lần thất bại trong khoảng thời gian 1 phút gần nhất.
 8. Nếu số lần thất bại nhỏ hơn 5, Lambda kết thúc lượt xử lý và hệ thống tiếp tục duy trì giám sát.
-9. Nếu số lần thất bại đạt từ **5 lần/1 phút** trở lên, hệ thống gửi tin nhắn cảnh báo qua mail bằng dịch vụ **Amazon SNS** và Lambda kích hoạt quy trình phản ứng tự động.
-10. Lambda kiểm tra danh sách quy tắc hiện tại trên **Network ACL** gắn với Subnet chứa EC2.
-11. Nếu IP chưa có trong danh sách chặn, Lambda tự động chèn một quy tắc `DENY` cho IP vi phạm dưới dạng CIDR `/32`.
-12. Network ACL lập tức từ chối mọi gói tin kết nối SSH từ địa chỉ IP vi phạm ngay tại tầng mạng ranh giới Subnet.
+9. Nếu số lần thất bại đạt từ **5 lần/1 phút** trở lên, Lambda kích hoạt quy trình phản ứng tự động thông qua **Network ACL** để chặn ip.
+10. Kiểm tra **Metric filter** nếu vượt ngưỡng **5 lần/1 phút** sẽ kích hoạt **SNS topic** để gửi mail cảnh báo.
 
 ---
 
@@ -61,13 +59,13 @@ Workshop sử dụng các dịch vụ AWS sau:
 
 ### Hạ tầng và Lưu trữ Nhật ký
 
-- **Amazon EC2:** Máy chủ Linux Ubuntu 22.04 LTS chạy dịch vụ SSH Server.
+- **Amazon EC2:** Máy chủ Linux Ubuntu chạy dịch vụ SSH Server.
 - **Amazon CloudWatch Logs:** Thu thập, lưu trữ và quản lý log đăng nhập SSH tập trung.
-- **CloudWatch Subscription Filter:** Quét và lọc thông tin log sự kiện theo dạng mẫu (Pattern Matching).
+- **CloudWatch Subscription Filter và Metric Filter:** Quét và lọc thông tin log sự kiện theo dạng mẫu (Pattern Matching).
 
 ### Quản lý Trạng thái, Cảnh báo và Tự động hóa
 
-- **AWS Lambda:** Thực thi mã Python 3.12 (sử dụng AWS Boto3 SDK) xử lý logic bóc tách IP, kích hoạt cảnh báo và tự động gọi API.
+- **AWS Lambda:** Thực thi mã Python (sử dụng AWS Boto3 SDK) xử lý logic bóc tách IP, kích hoạt cảnh báo và tự động gọi API.
 - **Amazon DynamoDB:** Cơ sở dữ liệu NoSQL lưu trữ bộ đếm số lần thất bại theo IP và cửa sổ thời gian.
 - **Amazon SNS:** Dịch vụ phát tin nhắn cảnh báo tự động qua Email tới quản trị viên.
 
@@ -87,9 +85,9 @@ Workshop sử dụng các dịch vụ AWS sau:
 Sau khi hoàn thành workshop, bạn sẽ có thể:
 
 - Khởi tạo máy chủ EC2 Ubuntu, cấu hình SSH và cài đặt CloudWatch Agent để đẩy log `/var/log/auth.log` tập trung.
-- Cấu hình CloudWatch Subscription Filter với pattern `Failed password` để lọc sự kiện đăng nhập thất bại.
+- Cấu hình CloudWatch Subscription Filter và Metric Filter với pattern `Failed password` để lọc sự kiện đăng nhập thất bại.
 - Tạo bảng Amazon DynamoDB để duy trì bộ đếm tần suất truy cập theo IP và khoảng thời gian 1 phút cùng topic Amazon SNS gửi email cảnh báo.
-- Lập trình hàm AWS Lambda bằng Python 3.12 bóc tách IP vi phạm, tương tác với DynamoDB, phát bản tin SNS và gọi API thao tác với Network ACL.
+- Lập trình hàm AWS Lambda bằng Python bóc tách IP vi phạm, tương tác với DynamoDB, phát bản tin SNS và gọi API thao tác với Network ACL.
 - Phân quyền IAM Role chính xác cho Lambda tương tác an toàn với CloudWatch Logs, DynamoDB, Amazon SNS và EC2 Network ACL.
 - Thực thi kịch bản giả lập tấn công SSH Brute-force để xác minh luồng gửi mail cảnh báo từ Amazon SNS và tự động thêm quy tắc `DENY` `/32` trên Network ACL.
 - Thực hiện quy trình dọn dẹp tài nguyên an toàn sau khi hoàn thành workshop để tránh phát sinh chi phí duy trì.

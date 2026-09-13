@@ -66,16 +66,18 @@ Hệ thống tuân theo kiến trúc Cloud-Native Serverless Security trên hạ
 
 Sơ đồ tổng quan luồng xử lý và các thành phần trong hệ thống:
 
-**Attacker → EC2 Ubuntu → CloudWatch Logs → Subscription Filter (`Failed password`) → AWS Lambda ↔ DynamoDB (Đếm thất bại) → Amazon SNS (Gửi Mail Cảnh Báo) & Network ACL (Rule DENY /32)**
+- **Attacker → EC2 Ubuntu → CloudWatch Logs → Subscription Filter (`Failed password`) → AWS Lambda ↔ DynamoDB (Attack Counter) →  Network ACL (DENY /32 Rule)**
+- **Attacker → EC2 Ubuntu → CloudWatch Logs → Metric Filter (`Failed password`)→ Amazon SNS (Email Alert)**
 
-![Kiến trúc hệ thống](/images/proposal/system_architecture1.png)
+![Kiến trúc hệ thống](/images/2/1.jpg)
 
 ## Các dịch vụ AWS sử dụng
 
 - **Amazon EC2:** Máy chủ Linux Ubuntu chạy dịch vụ SSH.
 - **Amazon CloudWatch Logs:** Dịch vụ thu thập và quản lý nhật ký hệ thống.
 - **CloudWatch Subscription Filter:** Lọc sự kiện log theo biểu thức mẫu (`Failed password`).
-- **AWS Lambda:** Hàm thực thi logic xử lý tự động (Python 3.12 Runtime).
+- **CloudWatch Metric Filter:** Lọc sự kiện log theo biểu thức mẫu (`Failed password`).
+- **AWS Lambda:** Hàm thực thi logic xử lý tự động.
 - **Amazon DynamoDB:** Cơ sở dữ liệu NoSQL lưu trữ bộ đếm theo IP.
 - **Amazon SNS:** Dịch vụ gửi thông báo cảnh báo qua Email.
 - **Network ACL (NACL):** Tường lửa stateless bảo vệ tầng Subnet.
@@ -109,22 +111,19 @@ Sơ đồ tổng quan luồng xử lý và các thành phần trong hệ thống
 
 ## Luồng hoạt động chi tiết
 
-![Luồng hoạt động của hệ thống](/images/proposal/system_workflow.png)
 
-Quy trình phát hiện, cảnh báo và chặn tự động gồm 12 bước:
+Quy trình phát hiện, cảnh báo và chặn tự động gồm 10 bước:
 
-1. Kẻ tấn công (Attacker) thực hiện các lượt đăng nhập SSH không hợp lệ vào máy chủ Amazon EC2 Ubuntu.
+1. Kẻ tấn công (Attacker) thực hiện các lượt đăng nhập SSH không hợp lệ vào máy chủ **Amazon EC2 Ubuntu**.
 2. SSH Server trên EC2 ghi nhận sự kiện đăng nhập thất bại vào file nhật ký hệ thống `/var/log/auth.log`.
-3. CloudWatch Agent cài trên EC2 tự động đẩy dữ liệu log mới về CloudWatch Logs Group.
-4. Subscription Filter quét log, phát hiện các chuỗi sự kiện khớp với cấu hình pattern `Failed password` và gửi payload sự kiện đến AWS Lambda.
-5. AWS Lambda giải mã dữ liệu nén, sử dụng biểu thức chính quy (Regex) để bóc tách chính xác địa chỉ IP nguồn (`clientIp`).
-6. Lambda truy vấn và cập nhật tăng bộ đếm số lần đăng nhập thất bại cho địa chỉ IP đó trong bảng Amazon DynamoDB.
+3. **CloudWatch Agent** cài trên EC2 tự động đẩy dữ liệu log mới về **CloudWatch Logs Group**.
+4. **Subscription Filter** quét log, phát hiện các chuỗi sự kiện khớp với cấu hình pattern `Failed password` và gửi payload sự kiện đến **AWS Lambda**.
+5. **AWS Lambda** giải mã dữ liệu nén, sử dụng biểu thức chính quy (Regex) để bóc tách chính xác địa chỉ IP nguồn (`clientIp`).
+6. Lambda truy vấn và cập nhật tăng bộ đếm số lần đăng nhập thất bại cho địa chỉ IP đó trong bảng **Amazon DynamoDB**.
 7. Lambda kiểm tra tổng số lần thất bại trong khoảng thời gian 1 phút gần nhất.
 8. Nếu số lần thất bại nhỏ hơn 5, Lambda kết thúc lượt xử lý và hệ thống tiếp tục duy trì giám sát.
-9. Nếu số lần thất bại đạt từ **5 lần/1 phút** trở lên, hệ thống gửi tin nhắn cảnh báo qua mail bằng dịch vụ Amazon SNS và Lambda kích hoạt quy trình phản ứng tự động.
-10. Lambda kiểm tra danh sách quy tắc hiện tại trên Network ACL gắn với Subnet chứa EC2.
-11. Nếu IP chưa có trong danh sách chặn, Lambda tự động chèn một quy tắc `DENY` cho IP vi phạm dưới dạng CIDR `/32`.
-12. Network ACL lập tức từ chối mọi gói tin kết nối SSH từ địa chỉ IP vi phạm ngay tại tầng mạng ranh giới Subnet.
+9. Nếu số lần thất bại đạt từ **5 lần/1 phút** trở lên, Lambda kích hoạt quy trình phản ứng tự động thông qua **Network ACL** để chặn ip.
+10. Kiểm tra **Metric filter** nếu vượt ngưỡng **5 lần/1 phút** sẽ kích hoạt **SNS topic** để gửi mail cảnh báo.
 
 ---
 
@@ -134,12 +133,11 @@ Quy trình phát hiện, cảnh báo và chặn tự động gồm 12 bước:
 
 Dự án được triển khai qua 6 bước kỹ thuật chi tiết:
 
-1. **Khởi tạo hạ tầng EC2 & Cấu hình SSH:** Tạo máy chủ EC2 Ubuntu 22.04 LTS, cấu hình Security Group mở cổng 22.
+1. **Khởi tạo hạ tầng EC2 & Cấu hình SSH:** Tạo máy chủ EC2 Ubuntu, cấu hình Security Group mở cổng 22.
 2. **Cấu hình CloudWatch Agent & Log Group:** Cài đặt CloudWatch Agent trên EC2 để thu thập log `/var/log/auth.log` về CloudWatch Log Group.
-3. **Khởi tạo Amazon DynamoDB Table & Amazon SNS Topic:** Tạo bảng `SSHAttackCounter` với Partition Key `AttackerIP` và khởi tạo SNS Topic cùng đăng ký email nhận cảnh báo.
-4. **Phân quyền IAM Role:** Khởi tạo IAM Role cấp quyền cho Lambda thao tác với CloudWatch Logs, DynamoDB (`GetItem`, `PutItem`, `UpdateItem`), SNS (`Publish`) và EC2 Network ACL (`DescribeNetworkAcls`, `CreateNetworkAclEntry`).
-5. **Phát triển mã nguồn AWS Lambda & Subscription Filter:** Lập trình hàm Lambda bằng Python 3.12 để bóc tách IP, đếm thất bại, kích hoạt SNS notification và tạo rule NACL; liên kết Subscription Filter từ CloudWatch Log Group tới Lambda.
-6. **Kiểm thử kịch bản & Đánh giá:** Sử dụng công cụ/script giả lập tấn công Brute-Force SSH sai 5 lần/phút để kiểm tra luồng gửi mail cảnh báo SNS và tự động chặn trên Network ACL.
+3. **Khởi tạo Amazon SNS Topic:** khởi tạo SNS Topic cùng đăng ký email nhận cảnh báo.
+4. **Khởi tạo quy trình tự động:** Sử dụng DynamoDB để đếm đăng nhập thất bại. Lập trình hàm Lambda bằng Python để bóc tách IP, đếm thất bại, tạo rule NACL; liên kết Subscription Filter từ CloudWatch Log Group tới Lambda.
+5. **Kiểm thử kịch bản & Đánh giá:** Sử dụng công cụ/script giả lập tấn công Brute-Force SSH sai 5 lần/phút để kiểm tra luồng gửi mail cảnh báo SNS và tự động chặn trên Network ACL.
 
 ## Yêu cầu kỹ thuật
 
